@@ -8,6 +8,7 @@ env.config();
 const app = express();
 
 app.use(cors());
+app.use(express.json());
 app.use(routes);
 
 app.listen(process.env.SERVER_PORT, () => {

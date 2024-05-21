@@ -21,10 +21,10 @@ let millis = Date.now().toString().slice(0, 10);
 
 
 const gameService = {
-    hypedGames: async (req, res) => {
+    hypedGames: async (platformIDs) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date, hypes; where first_release_date > ${millis}; sort hypes desc; limit 6;`;
+        config.data = `fields name, platforms, cover.url, first_release_date, hypes; where first_release_date > ${millis} & platforms = (${platformIDs}); sort hypes desc; limit 6;`;
 
         return axios.request(config)
             .then(response => {
@@ -35,10 +35,10 @@ const gameService = {
             })
 
     },
-    newGames: async (req, res) => {
+    newGames: async (platformIDs) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date; where first_release_date < ${millis}; sort first_release_date desc; limit 6;`;
+        config.data = `fields name, platforms, cover.url, first_release_date; where first_release_date < ${millis} & platforms = (${platformIDs}); sort first_release_date desc; limit 6;`;
 
 
         return axios.request(config)
@@ -50,10 +50,10 @@ const gameService = {
             })
 
     },
-    upcomingGames: async (req, res) => {
+    upcomingGames: async (platformIDs) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date; where first_release_date > ${millis}; sort first_release_date asc; limit 6;`;
+        config.data = `fields name, platforms, cover.url, first_release_date; where first_release_date > ${millis} & platforms = (${platformIDs}); sort first_release_date asc; limit 6;`;
 
         return axios.request(config)
             .then(response => {
@@ -64,10 +64,10 @@ const gameService = {
             })
 
     },
-    bestGames: async (req, res) => {
+    bestGames: async (platformIDs) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, genres.name, rating, rating_count, category, first_release_date; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; limit 10;`;
+        config.data = `fields name, platforms, cover.url, genres.name, rating, rating_count, category, first_release_date; where rating_count > 200 & category = (0, 3, 8, 9, 10) & platforms = (${platformIDs}); sort rating desc; limit 10;`;
 
         return axios.request(config)
             .then(response => {
@@ -76,6 +76,35 @@ const gameService = {
             .catch(error => {
                 console.error("Failed to make request:", error.message);
             })
+
+    },
+    platforms: async () => {
+
+        config.url = baseURL + '/platforms';
+        config.data = `fields name, abbreviation; where id = (6,167,169,48,49,130,34,39) ; sort id desc; limit 20;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    gameInfo: async (id) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, genres.name, first_release_date, artworks.url; where id = ${id};`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
 
     }
 

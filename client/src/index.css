@@ -22,3 +22,19 @@
 ::-webkit-scrollbar-thumb:hover {
     background: rgb(59 130 246);
 }
+
+.navItem {
+    @apply hover:bg-slate-600 py-2 me-3 rounded-md hover:bg-opacity-30 flex hover:cursor-pointer;
+}
+
+.navMainItem {
+    @apply text-white font-medium text-lg;
+}
+
+.navSubItem {
+    @apply text-slate-200 ps-11;
+}
+
+.active {
+    @apply bg-slate-600 bg-opacity-30 hover:bg-opacity-60;
+}

@@ -3,102 +3,97 @@ import Dropdown from '../components/Dropdown'
 import Strip from '../components/Strip'
 import Stack from '../components/Stack'
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const Home = () => {
 
-    const stripNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+    const [isLoading, setIsLoading] = useState(true);
     const [games, setGames] = useState();
-    const [events, setEvents] = useState();
 
-    const getGames = async () => {
+    const getGames = async (ids, signal) => {
 
-        await axios.get('http://localhost:3000/games')
+        setIsLoading(true);
+
+        await axios.post('http://localhost:3000/games/homeGames', { ids }, { signal })
             .then((response) => {
                 setGames(response.data);
+                setIsLoading(false);
             })
             .catch((error) => {
-                console.log(error);
+                if (error.code != "ERR_CANCELED") {
+                    console.log(error);
+                }
+
             });
     }
 
-    const getEvents = async () => {
 
-        await axios.get('http://localhost:3000/events')
-            .then((response) => {
-                setEvents(response.data);
+    const [platforms, setPlatforms] = useState();
+
+
+    const loadingStrip = () => {
+        var stripNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        return (
+            stripNum.map((item, i) => {
+                return (<Strip key={i} isLoading={true} rank={i + 1} />)
             })
-            .catch((error) => {
-                console.log(error);
-            });
+
+        )
+
     }
+
 
     useEffect(() => {
-        getGames();
-        getEvents();
+
+        const getPlatforms = async () => {
+
+            await axios.get('http://localhost:3000/games/homePlatforms')
+                .then((response) => {
+                    setPlatforms(response.data);
+
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
+        getPlatforms();
+
     }, []);
 
-
-
     return (
-        <div className='px-8 py-2'>
+        <div className=''>
 
-            <div>
-                <div className="flex justify-between pe-2">
-                    <button className='text-lg font-bold drop-shadow-lg text-slate-200'>EVENTS</button>
-                </div>
+            <div className="flex w-full xl:w-80 space-x-3">
+                <Dropdown id="platform" label="Platforms" checkBox={platforms} dropDownHandler={getGames} />
 
-                <div className='w-20 h-[0.1rem] bg-blue-400 rounded-full'></div>
+            </div >
 
-                <div className='mt-6 grid grid-cols-1 lg:grid-cols-2 gap-10'>
-
-                    {events && events.map((item, i) => {
-                        return (
-
-                            <div key={item.id} className='bg-gray-600 shadow-2xl border-black rounded-xl '>
-                                <div className="h-80 w-full">
-                                    <img className="object-fill h-full w-full rounded-t-xl" alt={item.name} src={item.event_logo ? item.event_logo.url : null} />
-                                </div>
-                                <div className="text-white text-center text-md p-3">{item.name}</div>
-                            </div>
-                        )
-                    })}
-
-
-                </div>
-
+            <Stack title="HYPED" path="hyped" games={games && games.hyped} isLoading={isLoading} />
+            <Stack title="NEW" path="new" games={games && games.new} isLoading={isLoading} />
+            <Stack title="UPCOMING" path="upcoming" games={games && games.upcoming} isLoading={isLoading} />
+            <div className='xl:hidden'>
+                <Stack title="BEST" path="best" games={games && games.best} isLoading={isLoading} />
             </div>
 
 
-            <div className="flex justify-items-start space-x-5 mt-12">
-                <Dropdown name="platform" label="Platform" />
-                <Dropdown name="genre" label="Genre" />
-            </div >
-
-
-
-            <Stack title="HYPED" games={games} />
-            <Stack title="NEW" games={games} />
-            <Stack title="UPCOMING" games={games} />
-
-            <div>
+            <div className='hidden xl:block'>
                 <div className="flex justify-between mt-12 pe-2">
-                    <button className='text-lg font-bold drop-shadow-lg text-slate-200'>BEST</button>
+                    <h1 className='text-lg font-bold drop-shadow-lg text-slate-200 cursor-default'>BEST</h1>
+                    <Link to="/games/best" className='text-xs font-bold drop-shadow-lg text-blue-300 hover:text-blue-400'>View All</Link>
                 </div>
 
                 <div className='w-20 h-[0.1rem] bg-blue-400 rounded-full'></div>
 
                 <div className='flex-col mt-6 space-y-6'>
-                    {games && games.best.map((item, i) => {
+                    {(games) ? games.best.map((item, i) => {
                         return (
-                            <Strip key={item.id} genres={item.genres} title={item.name} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} />
+                            <Strip key={item.id} genres={item.genres} title={item.name} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
                         )
-                    })}
+                    }) : loadingStrip()}
                 </div>
 
-                <button className="flex w-full p-3 shadow-lg mt-5 rounded-xl bg-blue-500 text-white font-bold justify-center">
-                    View All
-                </button>
             </div>
 
         </div>
