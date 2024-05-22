@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Dropdown from '../components/Dropdown'
 import Strip from '../components/Strip'
 import Stack from '../components/Stack'
@@ -8,13 +8,16 @@ import { Link } from 'react-router-dom'
 const Home = () => {
 
     const [isLoading, setIsLoading] = useState(true);
+    const [platforms, setPlatforms] = useState();
     const [games, setGames] = useState();
+    const controllerRef = useRef();
 
-    const getGames = async (ids, signal) => {
+    const getGames = async (ids = [6, 167, 169, 48, 49, 130, 34, 39], signal) => {
 
+        const platformIDs = JSON.stringify(ids);
         setIsLoading(true);
 
-        await axios.post('http://localhost:3000/games/homeGames', { ids }, { signal })
+        await axios.post('http://localhost:3000/games/homeGames', { platformIDs }, { signal })
             .then((response) => {
                 setGames(response.data);
                 setIsLoading(false);
@@ -26,10 +29,6 @@ const Home = () => {
 
             });
     }
-
-
-    const [platforms, setPlatforms] = useState();
-
 
     const loadingStrip = () => {
 
@@ -59,7 +58,19 @@ const Home = () => {
                 });
         }
 
-        getPlatforms();
+        if (controllerRef.current) {
+            controllerRef.current.abort();
+        }
+
+        //getPlatforms();
+
+
+        controllerRef.current = new AbortController();
+        const signal = controllerRef.current.signal;
+
+        getGames(undefined, signal);
+
+        return () => controllerRef.current.abort();
 
     }, []);
 

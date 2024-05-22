@@ -3,47 +3,51 @@ import gameService from "../services/gameService.js";
 const gameController = {
     getHomeGames: async (req, res) => {
 
-        var platformIDs = JSON.parse(req.body.ids);
-
-        if (!platformIDs.length) {
-            platformIDs = [6, 167, 169, 48, 49, 130, 34, 39];
-
-        }
+        var platformIDs = JSON.parse(req.body.platformIDs);
 
         platformIDs = platformIDs.toString().replace("[", "").replace("]", "");
 
+        console.log(platformIDs);
+
+        let games;
+
+
+
+
+        /*
         var games = {
             hyped: [],
             new: [],
             upcoming: [],
             best: []
         };
-
+        
         games.hyped = await gameService.hypedGames(platformIDs);
         games.new = await gameService.newGames(platformIDs);
         games.upcoming = await gameService.upcomingGames(platformIDs);
         games.best = await gameService.bestGames(platformIDs);
-
+        
         Object.keys(games).forEach((category) => {
-
+        
             Object.values(games[category]).forEach((item) => {
-
+        
                 if (item.cover) {
                     item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
-
+        
                     if (category == "best") {
                         let date = new Date(item.first_release_date * 1000);
                         item.release_date = date.getFullYear();
-
+        
                         item.score = Math.round(item.rating);
                     }
                 }
-
+        
             })
-
+        
         })
-
+         */
         res.status(200).send(games);
+
     },
     getHomePlatforms: async (req, res) => {
 
