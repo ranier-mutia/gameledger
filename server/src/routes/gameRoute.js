@@ -15,4 +15,7 @@ router.route("/getGameInfo")
 router.route("/getAllGames")
     .post(controller.getAllGames);
 
+router.route("/getGame")
+    .post(controller.getGame);
+
 export default router;

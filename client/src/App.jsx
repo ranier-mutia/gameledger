@@ -4,6 +4,7 @@ import Sidebar from "./pages/layouts/Sidebar.jsx"
 import { Route, Routes } from 'react-router-dom'
 import Home from "./pages/Home.jsx"
 import Games from './pages/Games.jsx'
+import Game from './pages/Game.jsx'
 
 const App = () => {
 
@@ -31,6 +32,8 @@ const App = () => {
               <Route path='/games/new' element={<Games key="new" type='NEW' />} />
               <Route path='/games/upcoming' element={<Games key="upcoming" type='UPCOMING' />} />
               <Route path='/games/best' element={<Games key="best" type='BEST' />} />
+
+              <Route path='/game/:slug' element={<Game />} />
             </Routes>
           </div>
         </div>

@@ -32,7 +32,7 @@ const Stack = (props) => {
             <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
                 {props.games ? props.games.map((item, i) => {
                     return (
-                        <Card key={item.id} id={item.id} name={item.name} title={props.title} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={props.isLoading} />
+                        <Card key={item.id} id={item.id} name={item.name} title={props.title} slug={item.slug} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={props.isLoading} />
                     )
                 }) : loadingCard()}
             </div>

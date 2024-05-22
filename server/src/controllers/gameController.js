@@ -94,6 +94,15 @@ const gameController = {
 
         res.status(200).send(gameInfo);
 
+    },
+    getGame: async (req, res) => {
+
+        const slug = req.body.slug;
+
+        const game = await gameService.game(slug);
+
+        res.status(200).send(game);
+
     }
 
 }
