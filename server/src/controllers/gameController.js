@@ -1,7 +1,7 @@
 import gameService from "../services/gameService.js";
 
 const gameController = {
-    getAllGames: async (req, res) => {
+    getHomeGames: async (req, res) => {
 
         var platformIDs = JSON.parse(req.body.ids);
 
@@ -45,10 +45,46 @@ const gameController = {
 
         res.status(200).send(games);
     },
-    getPlatforms: async (req, res) => {
+    getHomePlatforms: async (req, res) => {
 
         var platforms = await gameService.platforms();
         res.status(200).send(platforms);
+
+    },
+    getAllGames: async (req, res) => {
+
+        const offset = req.body.offset
+        const type = req.body.type
+
+        let games;
+        switch (type) {
+            case 'GAMES':
+                games = await gameService.allDefaultGames(offset);
+                break;
+            case 'HYPED':
+                games = await gameService.allHypedGames(offset);
+                break;
+            case 'NEW':
+                games = await gameService.allNewGames(offset);
+                break;
+            case 'UPCOMING':
+                games = await gameService.allUpcomingGames(offset);
+                break;
+            case 'BEST':
+                games = await gameService.allBestGames(offset);
+                break;
+        }
+
+        Object.values(games).forEach((item) => {
+
+            if (item.cover) {
+                item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+            }
+
+        })
+
+        res.status(200).send(games);
+
     },
     getGameInfo: async (req, res) => {
 
@@ -62,7 +98,6 @@ const gameController = {
         if (gameInfo[0].artworks) {
             gameInfo[0].artwork = gameInfo[0].artworks[0].url.replace(/t_thumb/, "t_cover_big");
         }
-
 
         res.status(200).send(gameInfo);
 

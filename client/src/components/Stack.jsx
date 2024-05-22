@@ -6,20 +6,16 @@ const Stack = (props) => {
 
     const loadingCard = () => {
 
-        var cardNum;
+        let count;
+        let cards = []
 
-        if (props.title != "BEST") {
-            cardNum = [1, 2, 3, 4, 5, 6];
-        } else {
-            cardNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        props.title != "BEST" ? count = 6 : count = 10;
+
+        for (let i = 0; i < count; i++) {
+            cards.push(<Card key={i} isLoading={true} />)
         }
 
-        return (
-            cardNum.map((item, i) => {
-                return (<Card key={i} isLoading={true} />)
-            })
-
-        )
+        return cards;
 
     }
 

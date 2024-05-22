@@ -32,14 +32,15 @@ const Home = () => {
 
 
     const loadingStrip = () => {
-        var stripNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-        return (
-            stripNum.map((item, i) => {
-                return (<Strip key={i} isLoading={true} rank={i + 1} />)
-            })
+        const count = 10;
+        let strips = []
 
-        )
+        for (let i = 0; i < count; i++) {
+            strips.push(<Strip key={i} isLoading={true} rank={i + 1} />)
+        }
+
+        return strips;
 
     }
 
@@ -63,7 +64,7 @@ const Home = () => {
     }, []);
 
     return (
-        <div className=''>
+        <div>
 
             <div className="flex w-full xl:w-80 space-x-3">
                 <Dropdown id="platform" label="Platforms" checkBox={platforms} dropDownHandler={getGames} />
@@ -87,7 +88,7 @@ const Home = () => {
                 <div className='w-20 h-[0.1rem] bg-blue-400 rounded-full'></div>
 
                 <div className='flex-col mt-6 space-y-6'>
-                    {(games) ? games.best.map((item, i) => {
+                    {games ? games.best.map((item, i) => {
                         return (
                             <Strip key={item.id} genres={item.genres} title={item.name} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
                         )

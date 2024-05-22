@@ -78,6 +78,76 @@ const gameService = {
             })
 
     },
+    allDefaultGames: async (offset) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, rating; sort rating desc; offset ${offset}; limit 30;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    allHypedGames: async (offset) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, first_release_date, hypes; where first_release_date > ${millis}; sort hypes desc; offset ${offset}; limit 30;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    allNewGames: async (offset) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, first_release_date; where first_release_date < ${millis}; sort first_release_date desc; offset ${offset}; limit 30;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    allUpcomingGames: async (offset) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, first_release_date; where first_release_date > ${millis}; sort first_release_date asc; offset ${offset}; limit 30;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    allBestGames: async (offset) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, category, rating, rating_count; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 30;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
     platforms: async () => {
 
         config.url = baseURL + '/platforms';

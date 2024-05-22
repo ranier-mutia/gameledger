@@ -7,7 +7,6 @@ const Card = (props) => {
     const [isMouseOver, setIsMouseOver] = useState(false);
     const [placement, setPlacement] = useState();
     const [gameInfo, setGameInfo] = useState();
-    const [isLoading, setIsLoading] = useState();
 
     var hoverTimeOut;
 
@@ -64,12 +63,9 @@ const Card = (props) => {
 
             const getGameInfo = async (id, signal) => {
 
-                setIsLoading(true);
-
                 await axios.post('http://localhost:3000/games/getGameInfo', { id }, { signal })
                     .then((response) => {
                         setGameInfo(response.data[0]);
-                        setIsLoading(false);
                     })
                     .catch((error) => {
                         if (error.code != "ERR_CANCELED") {
@@ -113,7 +109,7 @@ const Card = (props) => {
 
                 <div onMouseEnter={onMouseEnterHandler} onMouseLeave={onMouseLeaveHandler}>
 
-                    {props.title == "BEST" ? <div className='bg-blue-500 group-hover:bg-blue-600 w-10 h-10 absolute rounded-full -m-1 text-center content-center text-white font-bold text-xl'>{props.rank}</div> : null}
+                    {props.title == "BEST" ? <div className='border border-blue-600 bg-blue-500 group-hover:bg-blue-600 w-10 h-10 absolute rounded-full -m-1.5 text-center content-center text-white font-medium text-md'>#{props.rank}</div> : null}
 
                     <div className="flex justify-center align-middle h-40 sm:h-60 bg-gray-600 rounded-t-xl">
                         {(props.img ? <img className="object-fill h-full w-full rounded-t-xl " src={props.img} alt={props.name} />
@@ -134,17 +130,17 @@ const Card = (props) => {
                 >
                     <div className={`absolute hidden xl:flex bg-gray-800 h-80 w-80 m-auto z-20 rounded-xl shadow-xl border border-gray-900 ${placement}`}>
 
-                        {!isLoading && gameInfo ?
+                        {gameInfo ?
                             <div className='flex-col w-full text-white'>
 
                                 <h1 className='flex mx-5 my-3 font-medium text-sm'>{gameInfo.name} <span className='font-normal text-slate-300 ms-1'> {'(' + gameInfo.release_date + ')'}</span></h1>
 
                                 <div className='flex justify-center mx-5 bg-gray-700' >
-                                    {gameInfo.artwork ? <img className="object-fill h-40 w-full" src={gameInfo.artwork} alt={gameInfo.name} /> : <div className='content-center h-40 text-white'>Cover Missing</div>}
+                                    {gameInfo.artwork ? <img className="object-fill h-40 w-full" src={gameInfo.artwork} alt={gameInfo.name} /> : <div className='content-center h-40 text-white'>Image Missing</div>}
 
                                 </div>
                                 <div className='mx-5 my-3 flex flex-wrap'>
-                                    {gameInfo.genres.map((item, i) => {
+                                    {gameInfo.genres && gameInfo.genres.map((item, i) => {
                                         return (
                                             <span key={item.id} className='border-2 border-blue-600 rounded-full px-2 py-1 me-1 mb-1 text-xs '>{item.name}</span>
                                         )

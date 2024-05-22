@@ -43,7 +43,7 @@ const Strip = (props) => {
             <div className="flex w-full shadow-2xl h-20 group cursor-pointer">
 
                 <div className="bg-gray-900 group-hover:bg-black flex basis-1/12  justify-center rounded-s-xl">
-                    <h1 className='font:bold italic text-3xl text-white my-auto'>{props.rank}</h1>
+                    <h1 className='font:bold italic text-3xl text-blue-200 my-auto'>#{props.rank}</h1>
                 </div>
 
                 <div className="bg-gray-800 group-hover:bg-gray-900 flex basis-11/12 rounded-e-xl ">
