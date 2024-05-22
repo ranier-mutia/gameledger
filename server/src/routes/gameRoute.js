@@ -3,8 +3,8 @@ import controller from "../controllers/gameController.js";
 
 const router = express.Router();
 
-router.route("/homeGames")
-    .post(controller.getHomeGames);
+router.route("/homeAllGames")
+    .post(controller.getHomeAllGames);
 
 router.route("/homePlatforms")
     .get(controller.getHomePlatforms);

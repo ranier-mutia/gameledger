@@ -1,9 +1,7 @@
 import axios from "axios";
 import env from "dotenv";
 
-
 env.config();
-
 
 let baseURL = 'https://api.igdb.com/v4';
 
@@ -21,53 +19,26 @@ let millis = Date.now().toString().slice(0, 10);
 
 
 const gameService = {
-    hypedGames: async (platformIDs) => {
+    homeAllGames: async (platformIDs) => {
 
-        config.url = baseURL + '/games';
-        config.data = `fields name, platforms, cover.url, first_release_date, hypes; where first_release_date > ${millis} & platforms = (${platformIDs}); sort hypes desc; limit 6;`;
+        config.url = baseURL + '/multiquery';
+        config.data = `
+            query games "Hyped" {
+                fields name, platforms, cover.url, first_release_date, hypes; where first_release_date > ${millis} & platforms = (${platformIDs}); sort hypes desc; limit 6;
+            };
 
-        return axios.request(config)
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                console.error("Failed to make request:", error.message);
-            })
+            query games "New" {
+                fields name, platforms, cover.url, first_release_date; where first_release_date < ${millis} & platforms = (${platformIDs}); sort first_release_date desc; limit 6;
+            };
 
-    },
-    newGames: async (platformIDs) => {
+            query games "Upcoming" {
+                fields name, platforms, cover.url, first_release_date; where first_release_date > ${millis} & platforms = (${platformIDs}); sort first_release_date asc; limit 6;
+            };
 
-        config.url = baseURL + '/games';
-        config.data = `fields name, platforms, cover.url, first_release_date; where first_release_date < ${millis} & platforms = (${platformIDs}); sort first_release_date desc; limit 6;`;
-
-
-        return axios.request(config)
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                console.error("Failed to make request:", error.message);
-            })
-
-    },
-    upcomingGames: async (platformIDs) => {
-
-        config.url = baseURL + '/games';
-        config.data = `fields name, platforms, cover.url, first_release_date; where first_release_date > ${millis} & platforms = (${platformIDs}); sort first_release_date asc; limit 6;`;
-
-        return axios.request(config)
-            .then(response => {
-                return response.data;
-            })
-            .catch(error => {
-                console.error("Failed to make request:", error.message);
-            })
-
-    },
-    bestGames: async (platformIDs) => {
-
-        config.url = baseURL + '/games';
-        config.data = `fields name, platforms, cover.url, genres.name, rating, rating_count, category, first_release_date; where rating_count > 200 & category = (0, 3, 8, 9, 10) & platforms = (${platformIDs}); sort rating desc; limit 10;`;
+            query games "Best" {
+                fields name, platforms, cover.url, genres.name, rating, rating_count, category, first_release_date; where rating_count > 200 & category = (0, 3, 8, 9, 10) & platforms = (${platformIDs}); sort rating desc; limit 10;
+            };
+        `;
 
         return axios.request(config)
             .then(response => {
@@ -148,7 +119,7 @@ const gameService = {
             })
 
     },
-    platforms: async () => {
+    homePlatforms: async () => {
 
         config.url = baseURL + '/platforms';
         config.data = `fields name, abbreviation; where id = (6,167,169,48,49,130,34,39) ; sort id desc; limit 20;`;

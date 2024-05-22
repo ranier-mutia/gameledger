@@ -70,7 +70,8 @@ const Dropdown = (props) => {
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
 
-        if (checkBox) {
+        if (checkBox && isOpen) {
+
             const ids = checkBox.filter((item) => item.isChecked == true).map(i => { return i.id });
             props.dropDownHandler(JSON.stringify(ids), signal);
 

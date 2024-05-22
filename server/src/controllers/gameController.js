@@ -1,57 +1,46 @@
 import gameService from "../services/gameService.js";
 
 const gameController = {
-    getHomeGames: async (req, res) => {
+    getHomeAllGames: async (req, res) => {
 
         var platformIDs = JSON.parse(req.body.platformIDs);
 
         platformIDs = platformIDs.toString().replace("[", "").replace("]", "");
 
-        console.log(platformIDs);
+        const [hyped, newG, upcoming, best] = await gameService.homeAllGames(platformIDs);
 
-        let games;
+        let games = {};
 
+        games.hyped = hyped.result;
+        games.new = newG.result;
+        games.upcoming = upcoming.result;
+        games.best = best.result;
 
-
-
-        /*
-        var games = {
-            hyped: [],
-            new: [],
-            upcoming: [],
-            best: []
-        };
-        
-        games.hyped = await gameService.hypedGames(platformIDs);
-        games.new = await gameService.newGames(platformIDs);
-        games.upcoming = await gameService.upcomingGames(platformIDs);
-        games.best = await gameService.bestGames(platformIDs);
-        
         Object.keys(games).forEach((category) => {
-        
+
             Object.values(games[category]).forEach((item) => {
-        
+
                 if (item.cover) {
                     item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
-        
+
                     if (category == "best") {
                         let date = new Date(item.first_release_date * 1000);
                         item.release_date = date.getFullYear();
-        
+
                         item.score = Math.round(item.rating);
                     }
                 }
-        
+
             })
-        
+
         })
-         */
+
         res.status(200).send(games);
 
     },
     getHomePlatforms: async (req, res) => {
 
-        var platforms = await gameService.platforms();
+        var platforms = await gameService.homePlatforms();
         res.status(200).send(platforms);
 
     },

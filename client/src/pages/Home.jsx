@@ -17,7 +17,7 @@ const Home = () => {
         const platformIDs = JSON.stringify(ids);
         setIsLoading(true);
 
-        await axios.post('http://localhost:3000/games/homeGames', { platformIDs }, { signal })
+        await axios.post('http://localhost:3000/games/homeAllGames', { platformIDs }, { signal })
             .then((response) => {
                 setGames(response.data);
                 setIsLoading(false);
@@ -62,7 +62,7 @@ const Home = () => {
             controllerRef.current.abort();
         }
 
-        //getPlatforms();
+        getPlatforms();
 
 
         controllerRef.current = new AbortController();
