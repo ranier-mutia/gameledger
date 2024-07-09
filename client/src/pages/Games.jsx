@@ -91,22 +91,26 @@ const Games = (props) => {
 
 
     return (
-        <>
-            <h1 className='text-white text-xl font-medium'>{type}</h1>
+        <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
+            <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
-            <div className="flex w-full h-10 bg-gray-800 my-3"></div>
+                <div>
+                    <h1 className='text-white text-xl font-medium'>{type}</h1>
 
-            <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
-                {games.length ? games.map((item, i) => {
-                    return (
-                        <Card key={item.id} id={item.id} name={item.name} title={type} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={false} />
-                    )
-                }) : loadingCard(24)}
-                {isLoading && loadingCard(6)}
+                    <div className="flex w-full h-10 bg-gray-800 my-3"></div>
+
+                    <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
+                        {games.length ? games.map((item, i) => {
+                            return (
+                                <Card key={item.id} id={item.id} name={item.name} title={type} slug={item.slug} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={false} />
+                            )
+                        }) : loadingCard(24)}
+                        {isLoading && loadingCard(6)}
+                    </div>
+                </div>
+
             </div>
-
-
-        </>
+        </div>
 
     )
 }

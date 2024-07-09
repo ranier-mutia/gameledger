@@ -75,39 +75,44 @@ const Home = () => {
     }, []);
 
     return (
-        <div>
+        <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
+            <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
-            <div className="flex w-full xl:w-80 space-x-3">
-                <Dropdown id="platform" label="Platforms" checkBox={platforms} dropDownHandler={getGames} />
+                <div>
+                    <div className="flex w-full xl:w-80 space-x-3">
+                        <Dropdown id="platform" label="Platforms" checkBox={platforms} dropDownHandler={getGames} />
 
-            </div >
+                    </div >
 
-            <Stack title="HYPED" path="hyped" games={games && games.hyped} isLoading={isLoading} />
-            <Stack title="NEW" path="new" games={games && games.new} isLoading={isLoading} />
-            <Stack title="UPCOMING" path="upcoming" games={games && games.upcoming} isLoading={isLoading} />
-            <div className='xl:hidden'>
-                <Stack title="BEST" path="best" games={games && games.best} isLoading={isLoading} />
-            </div>
+                    <Stack title="HYPED" path="hyped" games={games && games.hyped} isLoading={isLoading} />
+                    <Stack title="NEW" path="new" games={games && games.new} isLoading={isLoading} />
+                    <Stack title="UPCOMING" path="upcoming" games={games && games.upcoming} isLoading={isLoading} />
+                    <div className='xl:hidden'>
+                        <Stack title="BEST" path="best" games={games && games.best} isLoading={isLoading} />
+                    </div>
 
 
-            <div className='hidden xl:block'>
-                <div className="flex justify-between mt-12 pe-2">
-                    <h1 className='text-lg font-bold drop-shadow-lg text-slate-200 cursor-default'>BEST</h1>
-                    <Link to="/games/best" className='text-xs font-bold drop-shadow-lg text-blue-300 hover:text-blue-400'>View All</Link>
+                    <div className='hidden xl:block'>
+                        <div className="flex justify-between mt-12 pe-2">
+                            <h1 className='text-lg font-bold drop-shadow-lg text-slate-200 cursor-default'>BEST</h1>
+                            <Link to="/games/best" className='text-xs font-bold drop-shadow-lg text-blue-300 hover:text-blue-400'>View All</Link>
+                        </div>
+
+                        <div className='w-20 h-[0.1rem] bg-blue-400 rounded-full'></div>
+
+                        <div className='flex-col mt-6 space-y-6'>
+                            {games ? games.best.map((item, i) => {
+                                return (
+                                    <Strip key={item.id} genres={item.genres} title={item.name} slug={item.slug} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
+                                )
+                            }) : loadingStrip()}
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div className='w-20 h-[0.1rem] bg-blue-400 rounded-full'></div>
-
-                <div className='flex-col mt-6 space-y-6'>
-                    {games ? games.best.map((item, i) => {
-                        return (
-                            <Strip key={item.id} genres={item.genres} title={item.name} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
-                        )
-                    }) : loadingStrip()}
-                </div>
-
             </div>
-
         </div>
 
     )

@@ -17,11 +17,27 @@ let config = {
     data: ''
 };
 
+let millis = Date.now().toString().slice(0, 10);
+
 const eventService = {
-    getEvents: async (req, res) => {
+    getOngoingEvents: async () => {
 
         config.url = baseURL + '/events';
-        config.data = `fields name, event_logo.url, start_time; sort start_time desc; limit 2;`;
+        config.data = `fields name, event_logo.url, start_time, end_time, slug; where start_time < ${millis} & end_time > ${millis}; sort start_time desc; limit 24;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getPastEvents: async (offset) => {
+
+        config.url = baseURL + '/events';
+        config.data = `fields name, event_logo.url, start_time, end_time, slug; where start_time != null; sort start_time desc; offset ${offset}; limit 12;`;
 
         return axios.request(config)
             .then(response => {

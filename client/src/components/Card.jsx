@@ -108,7 +108,7 @@ const Card = (props) => {
 
                 <input type="hidden" id="gameID" name='gameID' value={props.id} />
 
-                <Link to={"/game/" + props.slug} className='hover:w-full hover:h-full bg-red-500'>
+                <Link to={"/game/" + props.slug}>
 
                     <div onMouseEnter={onMouseEnterHandler} onMouseLeave={onMouseLeaveHandler}>
 
@@ -116,7 +116,7 @@ const Card = (props) => {
 
                         <div className="flex justify-center align-middle h-40 sm:h-60 bg-gray-600 rounded-t-xl">
                             {(props.img ? <img className="object-fill h-full w-full rounded-t-xl " src={props.img} alt={props.name} />
-                                : <div className='content-center text-white'>Cover Missing</div>)}
+                                : <div className='content-center text-white'>No Cover</div>)}
                         </div>
 
                         <div className="text-white text-sm p-2 min-h-[3.5rem] me-3">{props.name}</div>
@@ -132,7 +132,7 @@ const Card = (props) => {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className={`absolute hidden xl:flex bg-gray-800 h-80 w-80 m-auto z-20 rounded-xl shadow-xl border border-gray-900 ${placement}`}>
+                    <div className={`absolute hidden xl:flex bg-gray-800 h-80 w-80 m-auto z-30 rounded-xl shadow-xl border border-gray-900 ${placement}`}>
 
                         {gameInfo ?
                             <div className='flex-col w-full text-white'>
@@ -140,7 +140,7 @@ const Card = (props) => {
                                 <h1 className='flex mx-5 my-3 font-medium text-sm'>{gameInfo.name} <span className='font-normal text-slate-300 ms-1'> {'(' + gameInfo.release_date + ')'}</span></h1>
 
                                 <div className='flex justify-center mx-5 bg-gray-700' >
-                                    {gameInfo.artwork ? <img className="object-fill h-40 w-full" src={gameInfo.artwork} alt={gameInfo.name} /> : <div className='content-center h-40 text-white'>Image Missing</div>}
+                                    {gameInfo.screenshot ? <img className="object-fill h-40 w-full" src={gameInfo.screenshot} alt={gameInfo.name} /> : gameInfo.artwork ? <img className="object-fill h-40 w-full" src={gameInfo.artwork} alt={gameInfo.name} /> : <div className='content-center h-40 text-white'>No Image</div>}
 
                                 </div>
                                 <div className='mx-5 my-3 flex flex-wrap'>

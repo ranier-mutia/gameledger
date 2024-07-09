@@ -52,7 +52,7 @@ const gameService = {
     allDefaultGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, rating; sort rating desc; offset ${offset}; limit 30;`;
+        config.data = `fields name, cover.url, rating, slug; sort rating desc; offset ${offset}; limit 30;`;
 
         return axios.request(config)
             .then(response => {
@@ -66,7 +66,7 @@ const gameService = {
     allHypedGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date, hypes; where first_release_date > ${millis}; sort hypes desc; offset ${offset}; limit 30;`;
+        config.data = `fields name, cover.url, first_release_date, hypes, slug; where first_release_date > ${millis}; sort hypes desc; offset ${offset}; limit 30;`;
 
         return axios.request(config)
             .then(response => {
@@ -80,7 +80,7 @@ const gameService = {
     allNewGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date; where first_release_date < ${millis}; sort first_release_date desc; offset ${offset}; limit 30;`;
+        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date < ${millis}; sort first_release_date desc; offset ${offset}; limit 30;`;
 
         return axios.request(config)
             .then(response => {
@@ -94,7 +94,7 @@ const gameService = {
     allUpcomingGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date; where first_release_date > ${millis}; sort first_release_date asc; offset ${offset}; limit 30;`;
+        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date > ${millis}; sort first_release_date asc; offset ${offset}; limit 30;`;
 
         return axios.request(config)
             .then(response => {
@@ -108,7 +108,7 @@ const gameService = {
     allBestGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, category, rating, rating_count; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 30;`;
+        config.data = `fields name, cover.url, category, rating, rating_count, slug; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 30;`;
 
         return axios.request(config)
             .then(response => {
@@ -136,7 +136,7 @@ const gameService = {
     gameInfo: async (id) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, genres.name, first_release_date, artworks.url; where id = ${id};`;
+        config.data = `fields name, genres.name, first_release_date, artworks.url, screenshots.url; where id = ${id};`;
 
         return axios.request(config)
             .then(response => {
@@ -150,7 +150,21 @@ const gameService = {
     game: async (slug) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields *; where slug = "${slug}";`;
+        config.data = `fields *, cover.url, artworks.*, screenshots.*, videos.video_id, platforms.name, genres.name, themes.name, game_modes.name, player_perspectives.name, involved_companies.*, involved_companies.company.name, game_engines.name, alternative_names.*, language_supports.language.name, language_supports.language_support_type; where slug = "${slug}";`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getSimilarGames: async (ids) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, slug; where id = (${ids}); limit 6;`;
 
         return axios.request(config)
             .then(response => {

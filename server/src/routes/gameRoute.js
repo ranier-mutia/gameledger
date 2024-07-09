@@ -18,4 +18,7 @@ router.route("/getAllGames")
 router.route("/getGame")
     .post(controller.getGame);
 
+router.route("/similarGames")
+    .post(controller.getSimilarGames);
+
 export default router;

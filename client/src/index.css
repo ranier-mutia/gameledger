@@ -5,6 +5,7 @@
 /* width */
 ::-webkit-scrollbar {
     width: 7px;
+    height: 7px;
 }
 
 /* Track */
@@ -36,5 +37,9 @@
 }
 
 .active {
-    @apply bg-slate-600 bg-opacity-30 hover:bg-opacity-60;
+    @apply bg-slate-600 bg-opacity-30 hover:bg-opacity-60 text-blue-400;
+}
+
+.gameInfoItem {
+    @apply flex flex-col text-slate-400 mt-1;
 }

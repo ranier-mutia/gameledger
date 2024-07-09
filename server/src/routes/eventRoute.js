@@ -3,7 +3,10 @@ import controller from "../controllers/eventController.js";
 
 const router = express.Router();
 
-router.route("/")
-    .get(controller.getEvents);
+router.route("/ongoingEvents")
+    .post(controller.getOngoingEvents);
+
+router.route("/pastEvents")
+    .post(controller.getPastEvents);
 
 export default router;

@@ -1,25 +1,35 @@
 import eventService from "../services/eventService.js";
 
 const eventController = {
-    getEvents: async (req, res) => {
+    getOngoingEvents: async (req, res) => {
 
-        var events = await eventService.getEvents();
+        var ongoingEvents = await eventService.getOngoingEvents();
 
-
-
-        Object.values(events).forEach((item) => {
+        Object.values(ongoingEvents).forEach((item) => {
 
             if (item.event_logo) {
                 const imgURL = item.event_logo.url;
-                let result = imgURL.replace(/t_thumb/, "t_720p");
-                item.event_logo.url = result;
+                item.logo = imgURL.replace(/t_thumb/, "t_720p");
             }
 
         })
 
+        res.status(200).send(ongoingEvents);
+    },
+    getPastEvents: async (req, res) => {
 
+        var pastEvents = await eventService.getPastEvents(req.body.offset);
 
-        res.status(200).send(events);
+        Object.values(pastEvents).forEach((item) => {
+
+            if (item.event_logo) {
+                const imgURL = item.event_logo.url;
+                item.logo = imgURL.replace(/t_thumb/, "t_720p");
+            }
+
+        })
+        //console.log(pastEvents);
+        res.status(200).send(pastEvents);
     }
 
 }

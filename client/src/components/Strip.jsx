@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Strip = (props) => {
 
@@ -40,7 +41,7 @@ const Strip = (props) => {
     else {
 
         return (
-            <div className="flex w-full shadow-2xl h-20 group cursor-pointer">
+            <Link to={"/game/" + props.slug} className="flex w-full shadow-2xl h-20 group cursor-pointer">
 
                 <div className="bg-gray-900 group-hover:bg-black flex basis-1/12  justify-center rounded-s-xl">
                     <h1 className='font:bold italic text-3xl text-blue-200 my-auto'>#{props.rank}</h1>
@@ -73,7 +74,7 @@ const Strip = (props) => {
                     </div>
                 </div>
 
-            </div>
+            </Link>
         )
 
     }
