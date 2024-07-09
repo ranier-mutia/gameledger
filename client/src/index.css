@@ -33,7 +33,7 @@
 }
 
 .navSubItem {
-    @apply text-slate-200 ps-11;
+    @apply text-slate-300 ps-11;
 }
 
 .active {

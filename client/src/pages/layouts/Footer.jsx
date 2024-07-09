@@ -12,7 +12,7 @@ const Footer = () => {
                 <a href="#" className='hover:text-white cursor-pointer'>Terms & Privacy</a>
             </div>
 
-            <div className='text-slate-300 text-sm font-bold py-1'>
+            <div className='text-slate-400 text-sm font-bold py-1'>
                 <a>&copy; {year} GameLedger</a>
             </div>
 

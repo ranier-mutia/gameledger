@@ -9,4 +9,10 @@ router.route("/ongoingEvents")
 router.route("/pastEvents")
     .post(controller.getPastEvents);
 
+router.route("/event")
+    .post(controller.getEvent);
+
+router.route("/showCasedGames")
+    .post(controller.getShowCasedGames);
+
 export default router;

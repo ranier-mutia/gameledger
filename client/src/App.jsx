@@ -6,6 +6,7 @@ import Home from "./pages/Home.jsx"
 import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
 import Events from './pages/Events.jsx'
+import Event from './pages/Event.jsx'
 
 const App = () => {
 
@@ -35,9 +36,11 @@ const App = () => {
           <Route path='/games/new' element={<Games key="new" type='NEW' />} />
           <Route path='/games/upcoming' element={<Games key="upcoming" type='UPCOMING' />} />
           <Route path='/games/best' element={<Games key="best" type='BEST' />} />
-          <Route path='/events' element={<Events />} />
-
           <Route path='/game/:slug' element={<Game />} />
+
+          <Route path='/events' element={<Events />} />
+          <Route path='/event/:slug' element={<Event />} />
+
         </Routes>
 
       </div >

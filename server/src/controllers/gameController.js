@@ -153,7 +153,7 @@ const gameController = {
 
         res.status(200).send(games);
 
-    },
+    }
 
 }
 

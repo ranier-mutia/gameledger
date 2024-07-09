@@ -20,7 +20,7 @@ const Header = (props) => {
 
                     <Link to='/' className='flex space-x-1 cursor-pointer'>
                         <Logo />
-                        <button className='text-white font-bold text-lg hidden sm:block'>GameLedger</button>
+                        <button className='text-blue-400 font-bold text-lg hidden sm:block'>GameLedger</button>
                     </Link>
 
                 </div>

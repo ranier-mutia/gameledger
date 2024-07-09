@@ -3,12 +3,12 @@ import React from 'react'
 const GameInfo = (props) => {
 
     return (
-        <div className='bg-gray-800 h-full w-full p-5 mb-4 sm:w-60 sm:me-5 rounded-xl sm:order-first text-slate-200 space-y-3 text-sm font-medium'>
+        <div className='bg-gray-800 h-full w-full p-5 mb-4 sm:w-60 sm:me-5 rounded-xl sm:order-first text-blue-400 space-y-3 text-sm font-medium'>
             <div>
                 <div>Ratings:</div>
                 <div className='gameInfoItem'>
-                    <span>IGDB: {props.game.rating ? <span className='text-blue-400'>{props.game.rating.toFixed(2) + ' / 100'} </span> : <span className='text-slate-500'>N/A</span>} </span>
-                    <span>Users: {props.userRating ? <span className='text-blue-400'>{props.userRating.toFixed(2) + ' / 10'} </span> : <span className='text-slate-500'>N/A</span>} </span>
+                    <span>IGDB: {props.game.rating ? <span className='text-slate-400'>{props.game.rating.toFixed(2) + ' / 100'} </span> : <span className='text-slate-400'>N/A</span>} </span>
+                    <span>Users: {props.userRating ? <span className='text-slate-400'>{props.userRating.toFixed(2) + ' / 10'} </span> : <span className='text-slate-400'>N/A</span>} </span>
                 </div>
             </div>
 

@@ -47,6 +47,34 @@ const eventService = {
                 console.error("Failed to make request:", error.message);
             })
 
+    },
+    getEvent: async (slug) => {
+
+        config.url = baseURL + '/events';
+        config.data = `fields *, event_logo.url, videos.video_id; where slug = "${slug}";`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getShowCasedGames: async (ids) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, slug; where id = (${ids});`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
     }
 
 }

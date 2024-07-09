@@ -75,11 +75,11 @@ const Game = () => {
                                         : <div className='content-center text-white'>No Cover</div>)}
                                 </div>
 
-                                <div className='text-center text-slate-200 font-medium text-xl my-2 mx-10 overflow-hidden hover:overflow-y-auto h-14 sm:hidden'>{game.name}</div>
+                                <div className='text-center text-blue-400 font-medium text-xl my-2 mx-10 overflow-hidden hover:overflow-y-auto h-14 sm:hidden'>{game.name}</div>
                             </div>
 
                             <div className='text-slate-400 mt-44 hidden sm:block w-full'>
-                                <div className='font-medium text-slate-200 text-xl my-1'>{game.name}</div>
+                                <div className='font-medium text-blue-400 text-xl my-1'>{game.name}</div>
                                 <div className='overflow-hidden hover:overflow-y-auto h-24'>
                                     <p >{game.summary}</p>
                                 </div>
