@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
+import Login from './pages/layouts/Login.jsx'
 import Header from "./pages/layouts/Header.jsx"
 import Sidebar from "./pages/layouts/Sidebar.jsx"
-import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from "./pages/Home.jsx"
 import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
@@ -10,10 +11,15 @@ import Event from './pages/Event.jsx'
 
 const App = () => {
 
+  const [isLoginShown, setIsLoginShown] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   const location = useLocation();
 
-  const onClickHandler = () => {
+  const onLoginClickHandler = () => {
+    setIsLoginShown(!isLoginShown);
+  }
+
+  const onMenuClickHandler = () => {
     setIsHidden(!isHidden);
   }
 
@@ -23,11 +29,13 @@ const App = () => {
 
   return (
     <>
-      <Header onClickHandler={onClickHandler} />
+      <Header onMenuClickHandler={onMenuClickHandler} onLoginClickHandler={onLoginClickHandler} />
+
+      <Login isShown={isLoginShown} onLoginClickHandler={onLoginClickHandler} />
 
       <div className='flex bg-gray-700 h-full min-h-screen'>
 
-        <Sidebar onClickHandler={onClickHandler} isHidden={isHidden} />
+        <Sidebar onMenuClickHandler={onMenuClickHandler} isHidden={isHidden} />
 
         <Routes>
           <Route path='/' element={<Home />} />

@@ -93,8 +93,11 @@ const Game = () => {
 
                             <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
 
-                                <div className='w-full'>
+                                <div className='hidden sm:block'>
+                                    <GameInfo game={game} />
+                                </div>
 
+                                <div className='w-full'>
 
                                     {game.videos && <VideoPlaylist videos={game.videos} />}
 
@@ -104,12 +107,13 @@ const Game = () => {
 
                                     {game.artworks || game.screenshots ? <Gallery artworks={game.artworks} screenshots={game.screenshots} /> : null}
 
+                                    <div className='sm:hidden'>
+                                        <GameInfo game={game} />
+                                    </div>
+
                                     {game.similar_games && <SimilarGames games={game.similar_games} />}
 
-
                                 </div>
-
-                                <GameInfo game={game} />
 
                             </div>
 

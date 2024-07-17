@@ -3,7 +3,7 @@ import React from 'react'
 const GameInfo = (props) => {
 
     return (
-        <div className='bg-gray-800 h-full w-full p-5 mb-4 sm:w-60 sm:me-5 rounded-xl sm:order-first text-blue-400 space-y-3 text-sm font-medium'>
+        <div className='bg-gray-800 w-full p-5 mb-4 sm:w-60 sm:me-5 rounded-xl text-blue-400 space-y-3 text-sm font-medium'>
             <div>
                 <div>Ratings:</div>
                 <div className='gameInfoItem'>

@@ -5,7 +5,7 @@ import event from "./eventRoute.js";
 
 const router = express.Router();
 
-router.use("/user", user);
+router.use("/users", user);
 router.use("/games", game);
 router.use("/events", event);
 

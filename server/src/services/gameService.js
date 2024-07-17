@@ -164,7 +164,7 @@ const gameService = {
     getSimilarGames: async (ids) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, slug; where id = (${ids}); limit 6;`;
+        config.data = `fields name, cover.url, slug; where id = (${ids}); limit 10;`;
 
         return axios.request(config)
             .then(response => {

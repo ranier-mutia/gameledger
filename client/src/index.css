@@ -24,6 +24,10 @@
     background: rgb(59 130 246);
 }
 
+input {
+    color-scheme: dark;
+}
+
 .navItem {
     @apply hover:bg-slate-600 py-2 me-3 rounded-md hover:bg-opacity-30 flex hover:cursor-pointer;
 }
