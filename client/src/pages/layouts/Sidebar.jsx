@@ -20,7 +20,7 @@ const Sidebar = (props) => {
     }, [props.isHidden]);
 
     return (
-        <div className={`w-[17rem] h-full fixed z-30 ease-in-out duration-200 xl:flex xl:z-10 xl:transform-none ${props.isHidden ? '-translate-x-full' : 'translate-x-0'}`} ref={sideBarRef}>
+        <div className={`w-[17rem] h-full fixed z-40 ease-in-out duration-200 xl:flex xl:z-10 xl:transform-none ${props.isHidden ? '-translate-x-full' : 'translate-x-0'}`} ref={sideBarRef}>
 
             <div className='flex-col content-between w-full h-full bg-gray-800 xl:bg-gray-700'>
                 <Nav onClickHandler={props.onMenuClickHandler} />

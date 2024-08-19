@@ -4,25 +4,35 @@ import cors from "cors";
 import routes from "./routes/index.js";
 import session from "express-session";
 import passport from "passport"
-import { Strategy } from "passport-local";
+import passportConfig from "./config/passport.js";
 
 env.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
+    })
+);
+
 app.use(express.json());
 
 app.use(session({
-    secret: "secretword",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24
+        maxAge: 604800000
     }
 }));
 
+app.use(passport.initialize());
 app.use(passport.session());
+
+passportConfig();
 
 app.use(routes);
 

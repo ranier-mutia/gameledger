@@ -8,7 +8,7 @@ function Login(props) {
         const [type, setType] = useState("login");
 
         const onTypeClickHandler = () => {
-            if (type == "login" || type == "forgot") {
+            if (type == "login") {
                 setType("signup")
             } else setType("login");
         }
@@ -31,26 +31,7 @@ function Login(props) {
                         {type != "forgot" && <span className='text-blue-400 font-medium text-lg select-none'>GameLedger</span>}
                     </div>
 
-                    {type != "forgot" &&
-                        <div>
-                            <div className='flex justify-center mx-8 mb-4'>
-                                <button className="bg-white w-full rounded-md px-3 py-2 flex justify-center gap-2 font-bold text-slate-600 text-nowrap hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300">
-                                    <img className="w-4 h-4 my-auto" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
-                                    <span>{type == "login" ? 'Login' : 'Sign up'} with Google</span>
-                                </button>
-                            </div>
-
-                            <span className='flex justify-center text-slate-400 text-xs font-medium mb-4 select-none'>OR</span>
-                        </div>
-                    }
-
-                    {type == "forgot" &&
-                        <div className='flex justify-center mx-8 mb-4'>
-                            <span className='text-slate-400 text-xs'>Enter your email address associated with your account and we'll send you a link to reset your password.</span>
-                        </div>
-                    }
-
-                    <LoginForm type={type} />
+                    <LoginForm type={type} onLoginClickHandler={props.onLoginClickHandler} authenticateUser={props.authenticateUser} onTypeClickHandler={onTypeClickHandler} />
 
                     {type == "login" &&
                         <div className='flex justify-center text-xs'>
@@ -58,11 +39,13 @@ function Login(props) {
                         </div>
                     }
 
+                    {type != "forgot" &&
+                        <div className='flex justify-center space-x-2 mt-6'>
+                            <span className='text-slate-200 pt-0.5 select-none text-xs'>{type == "login" || type == "forgot" ? "Don't have an account?" : 'Already a member?'}</span>
+                            <button className="bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-700 py-1 px-3 font-medium rounded-md text-slate-100 text-nowrap text-xs" onClick={onTypeClickHandler}>{type == "login" || type == "forgot" ? 'Sign Up' : 'Login'}</button>
+                        </div>
+                    }
 
-                    <div className='flex justify-center space-x-2 mt-6'>
-                        <span className='text-slate-200 pt-0.5 select-none text-xs'>{type == "login" || type == "forgot" ? "Don't have an account?" : 'Already a member?'}</span>
-                        <button className="bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-700 py-1 px-3 font-medium rounded-md text-slate-100 text-nowrap text-xs" onClick={onTypeClickHandler}>{type == "login" || type == "forgot" ? 'Sign Up' : 'Login'}</button>
-                    </div>
 
 
 
