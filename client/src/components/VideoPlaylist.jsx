@@ -16,7 +16,7 @@ const VideoPlaylist = (props) => {
 
     return (
         <div className='flex flex-col h-auto aspect-video sm:flex-row mb-4'>
-            {video && <iframe key={video} className='w-full h-60 sm:h-auto' src={`https://www.youtube.com/embed/` + video} allowFullScreen></iframe>}
+            {video && <iframe key={video} className='w-full h-60 sm:h-auto bg-black' src={`https://www.youtube.com/embed/` + video} allowFullScreen></iframe>}
 
             {props.videos.length > 1 ? <div className='flex bg-gray-800  overflow-x-auto sm:overflow-y-auto sm:flex-col'>
                 {props.videos.map(item => {

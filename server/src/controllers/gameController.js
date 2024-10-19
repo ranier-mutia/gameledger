@@ -84,8 +84,10 @@ const gameController = {
 
         const gameInfo = await gameService.gameInfo(id);
 
-        let date = new Date(gameInfo[0].first_release_date * 1000);
-        gameInfo[0].release_date = date.getFullYear();
+        if (gameInfo) {
+            let date = new Date(gameInfo[0].first_release_date * 1000);
+            gameInfo[0].release_date = date.getFullYear();
+        }
 
         if (gameInfo[0].artworks) {
             gameInfo[0].artwork = gameInfo[0].artworks[0].url.replace(/t_thumb/, "t_screenshot_med");

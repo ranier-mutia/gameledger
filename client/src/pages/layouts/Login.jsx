@@ -1,11 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import LoginForm from '../../components/LoginForm';
 
 function Login(props) {
 
-    if (props.isShown) {
+    const [type, setType] = useState("login");
 
-        const [type, setType] = useState("login");
+    useEffect(() => {
+        if (props.isShown) {
+            document.body.style.overflow = 'hidden'
+            setType("login")
+        }
+        !props.isShown ? document.body.style.overflow = 'unset' : null;
+    }, [props.isShown]);
+
+    if (props.isShown) {
 
         const onTypeClickHandler = () => {
             if (type == "login") {
@@ -16,7 +24,7 @@ function Login(props) {
         return (
             <div className='fixed flex justify-center items-center h-screen w-screen bg-opacity-80 bg-black z-50'>
 
-                <div className='bg-gray-800 w-full h-full sm:rounded-xl sm:h-auto sm:min-h-1/2 sm:w-80 md:w-96 xl:w-1/5 pb-8 shadow-xl'>
+                <div className='bg-gray-800 w-full h-full sm:rounded-xl sm:h-auto sm:w-80 md:w-96 xl:w-1/5 pb-8 shadow-xl'>
 
                     <div className='flex justify-end'>
                         <button className='text-slate-300 rounded-lg p-1 m-2  hover:bg-slate-700' onClick={props.onLoginClickHandler}>

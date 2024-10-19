@@ -103,7 +103,7 @@ const Home = () => {
                         <div className='flex-col mt-6 space-y-6'>
                             {games ? games.best.map((item, i) => {
                                 return (
-                                    <Strip key={item.id} genres={item.genres} title={item.name} slug={item.slug} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
+                                    <Strip key={item.id} id={item.id} genres={item.genres} title={item.name} slug={item.slug} img={item.cover.url} year={item.release_date} score={item.score} rank={i + 1} isLoading={isLoading} />
                                 )
                             }) : loadingStrip()}
                         </div>

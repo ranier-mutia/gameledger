@@ -83,7 +83,7 @@ const GameInfo = (props) => {
                 <div>Alternative Names:</div>
                 <div className='gameInfoItem'>
                     {props.game.alternative_names ? props.game.alternative_names.map(item => {
-                        return <span key={item.id}>{item.comment}: <span className='text-slate-500 font-normal'>{item.name}</span></span>
+                        return <span key={item.id}>{item.comment}: <span className='text-slate-400 font-normal'>{item.name}</span></span>
                     })
                         : <span className='text-slate-500'>N/A</span>}
                 </div>

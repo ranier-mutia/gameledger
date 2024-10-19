@@ -25,7 +25,7 @@ const userController = {
     authUser: async (req, res) => {
 
         if (req.isAuthenticated()) {
-            res.status(200).send(req.user.username);
+            res.status(200).send({ username: req.user.username, email: req.user.email });
         }
 
     },

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import GameOptions from './GameOptions'
 
 const Card = (props) => {
 
@@ -108,21 +109,25 @@ const Card = (props) => {
 
                 <input type="hidden" id="gameID" name='gameID' value={props.id} />
 
-                <Link to={"/game/" + props.slug}>
+                <div onMouseEnter={onMouseEnterHandler} onMouseLeave={onMouseLeaveHandler}>
 
-                    <div onMouseEnter={onMouseEnterHandler} onMouseLeave={onMouseLeaveHandler}>
+                    <GameOptions isMouseOver={isMouseOver} type="card" slug={props.slug} id={props.id} />
 
-                        {props.title == "BEST" ? <div className='border border-blue-600 bg-blue-500 group-hover:bg-blue-600 w-10 h-10 absolute rounded-full -m-1.5 text-center content-center text-white font-medium text-md'>#{props.rank}</div> : null}
+                    <Link to={"/game/" + props.slug}>
+                        <div >
 
-                        <div className="flex justify-center align-middle h-40 sm:h-60 bg-gray-600 rounded-t-xl">
-                            {(props.img ? <img className="object-fill h-full w-full rounded-t-xl " src={props.img} alt={props.name} />
-                                : <div className='content-center text-white'>No Cover</div>)}
+                            {props.title == "BEST" ? <div className='border border-blue-600 bg-blue-500 group-hover:bg-blue-600 w-10 h-10 absolute rounded-full -m-1.5 text-center content-center text-white font-medium text-md'>#{props.rank}</div> : null}
+
+                            <div className="flex justify-center align-middle h-40 sm:h-60 bg-gray-600 rounded-t-xl">
+                                {(props.img ? <img className="object-fill h-full w-full rounded-t-xl " src={props.img} alt={props.name} />
+                                    : <div className='content-center text-white'>No Cover</div>)}
+                            </div>
+
+                            <div className="text-white text-sm p-2 min-h-[3.5rem] me-3">{props.name}</div>
                         </div>
 
-                        <div className="text-white text-sm p-2 min-h-[3.5rem] me-3">{props.name}</div>
-                    </div>
-
-                </Link>
+                    </Link>
+                </div>
 
                 <Transition show={isMouseOver}
                     enter='transition-opacity duration-250'
