@@ -67,7 +67,7 @@ const Card = (props) => {
 
                 await axios.post('http://localhost:3000/games/getGameInfo', { id }, { signal })
                     .then((response) => {
-                        setGameInfo(response.data[0]);
+                        setGameInfo(response.data);
                     })
                     .catch((error) => {
                         if (error.code != "ERR_CANCELED") {

@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import EventCard from '../components/EventCard';
+import ReviewCard from '../components/ReviewCard';
 
-const Events = (props) => {
+const Reviews = (props) => {
 
-    const [events, setEvents] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [offset, setOffset] = useState(0);
     const [hasNext, setHasNext] = useState(true);
@@ -12,19 +12,31 @@ const Events = (props) => {
     const controllerRef = useRef();
 
 
-    const getEvents = async (signal) => {
+    const loadingCard = (count) => {
+
+        let cards = []
+
+        for (let i = 0; i < count; i++) {
+            cards.push(<ReviewCard key={i} isLoading={true} />)
+        }
+
+        return cards;
+
+    }
+
+    const getReviews = async (signal) => {
 
         if (hasNext) {
 
             setIsLoading(true);
 
-            await axios.post('http://localhost:3000/events/getEvents', { offset }, { signal })
+            await axios.post('http://localhost:3000/reviews/getReviews', { offset }, { signal })
                 .then((response) => {
 
                     const nextOffset = response.data.length - 12;
                     const result = response.data.slice(0, 12);
 
-                    setEvents((prevEvents) => [...prevEvents, ...result]);
+                    setReviews((reviews) => [...reviews, ...result]);
                     setOffset(prevOffset => prevOffset + 12);
                     setIsLoading(false);
 
@@ -40,21 +52,7 @@ const Events = (props) => {
 
         }
 
-
     }
-
-    const loadingCard = (count) => {
-
-        let cards = []
-
-        for (let i = 0; i < count; i++) {
-            cards.push(<EventCard key={i} isLoading={true} />)
-        }
-
-        return cards;
-
-    }
-
 
     useEffect(() => {
 
@@ -65,12 +63,11 @@ const Events = (props) => {
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
 
-        getEvents(signal);
+        getReviews(signal);
 
         return () => controllerRef.current.abort();
 
     }, []);
-
 
     useEffect(() => {
 
@@ -86,7 +83,7 @@ const Events = (props) => {
                 controllerRef.current = new AbortController();
                 const signal = controllerRef.current.signal;
 
-                getEvents(signal);
+                getReviews(signal);
             }
         };
 
@@ -100,19 +97,20 @@ const Events = (props) => {
         };
     }, [isLoading]);
 
-
     return (
         <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
             <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
                 <div>
-                    <h1 className='text-white text-xl font-medium'>Events</h1>
+                    <h1 className='text-white text-xl font-medium'>Reviews</h1>
 
                     <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 xl:gap-4 mt-4'>
-                        {events.length ? events.map((item, i) => {
+                        {reviews.length ? reviews.map((item, i) => {
+
                             return (
-                                < EventCard key={item.id} id={item.id} name={item.name} slug={item.slug} img={item.logo ? item.logo : null} isLoading={false} />
+                                < ReviewCard key={item.id} review={item} isLoading={false} />
                             )
+
                         }) : loadingCard(12)}
                         {isLoading && loadingCard(4)}
                     </div>
@@ -124,5 +122,5 @@ const Events = (props) => {
     )
 }
 
-export default Events
+export default Reviews
 

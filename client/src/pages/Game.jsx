@@ -70,7 +70,7 @@ const Game = () => {
                         <div className='flex justify-center w-full pt-16'>
 
                             <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
-                                <div className="flex justify-center align-middle h-60 w-40 bg-gray-600 rounded-xl border border-gray-800 shadow-xl">
+                                <div className="flex justify-center align-middle h-64 w-60 bg-gray-600 rounded-xl border border-gray-800 shadow-xl -mt-2">
                                     {(game.cover ? <img className="object-fill h-full w-full rounded-xl " src={game.cover.urlBig} alt={game.name} />
                                         : <div className='content-center text-white'>No Cover</div>)}
                                 </div>

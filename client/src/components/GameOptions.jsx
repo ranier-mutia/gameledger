@@ -4,6 +4,7 @@ import { useUserContext } from '../hooks/UserContext.jsx'
 import LoginContext from '../hooks/LoginContext.jsx'
 import ListContext from '../hooks/ListContext.jsx'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const GameOptions = (props) => {
 
@@ -11,10 +12,12 @@ const GameOptions = (props) => {
     const [isShownStatus, setIsShownStatus] = useState(false);
     const [listData, setListData] = useState("");
     const [favoriteData, setFavoriteData] = useState("");
+    const [reviewData, setReviewData] = useState("");
     const [isLoading, setIsLoading] = useState({
         setFavorite: false,
         list: false,
-        getFavorite: false
+        getFavorite: false,
+        getReview: false
     });
 
     const user = useUserContext();
@@ -23,6 +26,8 @@ const GameOptions = (props) => {
 
     const menuRef = useRef();
     const controllerRef = useRef();
+
+    const navigate = useNavigate();
 
     const onClickHandler = () => {
 
@@ -82,7 +87,7 @@ const GameOptions = (props) => {
 
         const id = favoriteData.id ? favoriteData.id : "";
 
-        await axios.post('http://localhost:3000/favorites/setFavorite', { id: id, email: user.email, gameID: props.id }, { signal })
+        await axios.post('http://localhost:3000/preferences/setFavorite', { id: id, email: user.email, gameID: props.id }, { signal })
             .then((response) => {
                 setFavoriteData(response.data)
                 setIsLoading((prev) => ({ ...prev, setFavorite: false }));
@@ -98,6 +103,7 @@ const GameOptions = (props) => {
     const onReviewClickHandler = () => {
         if (!isLoggedIn()) return
 
+        reviewData ? navigate("/review/edit/" + reviewData.id) : navigate("/review/new/" + props.id);
 
     }
 
@@ -128,10 +134,27 @@ const GameOptions = (props) => {
 
         setIsLoading((prev) => ({ ...prev, getFavorite: true }));
 
-        await axios.post('http://localhost:3000/favorites/getFavoriteData', { email, id }, { signal })
+        await axios.post('http://localhost:3000/preferences/getFavoriteData', { email, id }, { signal })
             .then((response) => {
                 setFavoriteData(response.data);
                 setIsLoading((prev) => ({ ...prev, getFavorite: false }));
+            })
+            .catch((error) => {
+                if (error.code != "ERR_CANCELED") {
+                    console.log(error);
+                }
+            });
+
+    }
+
+    const getReviewData = async (email, id, signal) => {
+
+        setIsLoading((prev) => ({ ...prev, getReview: true }));
+
+        await axios.post('http://localhost:3000/reviews/getReviewData', { email, id }, { signal })
+            .then((response) => {
+                setReviewData(response.data);
+                setIsLoading((prev) => ({ ...prev, getReview: false }));
             })
             .catch((error) => {
                 if (error.code != "ERR_CANCELED") {
@@ -153,6 +176,7 @@ const GameOptions = (props) => {
         if (isShown && user.loggedIn) {
             getListData(user.email, props.id, signal);
             getFavoriteData(user.email, props.id, signal);
+            getReviewData(user.email, props.id, signal);
         }
 
         document.addEventListener('mousedown', outsideClickHandler);
@@ -182,7 +206,7 @@ const GameOptions = (props) => {
                 >
                     <div className='absolute w-full h-40 sm:h-60 bg-gray-900 rounded-t-xl border-b border-b-gray-700 p-1' ref={menuRef}>
 
-                        {!isLoading.list && !isLoading.getFavorite ?
+                        {!isLoading.list && !isLoading.getFavorite && !isLoading.getReview ?
                             <div>
                                 <div className='w-full h-8 flex justify-between'>
                                     <button className={`text-slate-300  rounded-lg px-1 hover:bg-slate-800 ${!isShownStatus && 'collapse'}`} onClick={() => setIsShownStatus(false)}>
@@ -211,7 +235,7 @@ const GameOptions = (props) => {
                                             </div>
                                         }
 
-                                        <li className='hover:bg-gray-800 p-0.5 sm:p-3'>Make a review</li>
+                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
                                     </ul>
                                     :
                                     <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none' onClick={onStatusSelectHandler}>
@@ -256,7 +280,7 @@ const GameOptions = (props) => {
                 }
 
                 <Transition show={isShown}
-                    enter='transition-all origin-right duration-250 '
+                    enter='transition-all origin-right duration-250'
                     enterFrom='scale-x-0 right-5'
                     enterTo="scale-x-full right-8"
                     leave="transition-all origin-right duration-250 "
@@ -265,7 +289,7 @@ const GameOptions = (props) => {
                 >
                     <div className='z-10 h-52 w-60 absolute -top-1/2 bg-gray-900 rounded-lg p-1 border border-gray-700' ref={menuRef}>
 
-                        {!isLoading.list && !isLoading.getFavorite ?
+                        {!isLoading.list && !isLoading.getFavorite && !isLoading.getReview ?
 
                             <div>
 
@@ -284,7 +308,7 @@ const GameOptions = (props) => {
                                             </div>
                                         }
 
-                                        <li className='hover:bg-gray-800 p-0.5 sm:p-3'>Make a review</li>
+                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
                                     </ul>
                                     :
                                     <div>

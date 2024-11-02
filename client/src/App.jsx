@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom'
 import { UserContext } from './hooks/UserContext.jsx'
 import LoginContext from './hooks/LoginContext.jsx'
 import ListContext from './hooks/ListContext.jsx'
@@ -13,6 +13,9 @@ import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
 import Events from './pages/Events.jsx'
 import Event from './pages/Event.jsx'
+import Reviews from './pages/Reviews.jsx'
+import Review from './pages/Review.jsx'
+import ReviewEditor from './pages/ReviewEditor.jsx'
 
 
 const App = () => {
@@ -66,7 +69,7 @@ const App = () => {
     await axios.post(import.meta.env.VITE_REACT_APP_SERVER_BASEURL + 'users/logout', undefined, { withCredentials: true })
       .then((response) => {
 
-        setUser({ loggedIn: false });
+        window.location.reload();
 
       })
       .catch((error) => {
@@ -102,6 +105,7 @@ const App = () => {
 
               <Routes>
                 <Route path='/' element={<Home />} />
+
                 <Route path='/games' element={<Games key="games" type='GAMES' />} />
                 <Route path='/games/hyped' element={<Games key="hyped" type='HYPED' />} />
                 <Route path='/games/new' element={<Games key="new" type='NEW' />} />
@@ -112,6 +116,12 @@ const App = () => {
                 <Route path='/events' element={<Events />} />
                 <Route path='/event/:slug' element={<Event />} />
 
+                <Route path='/reviews' element={<Reviews />} />
+                <Route path='/review/:id' element={<Review />} />
+                <Route path='/review/new/:id' element={<ReviewEditor key="new" type="new" />} />
+                <Route path='/review/edit/:id' element={<ReviewEditor key="edit" type="edit" />} />
+
+                <Route path='*' element={<Navigate to='/' />} />
               </Routes>
 
             </LoginContext.Provider>

@@ -110,8 +110,6 @@ const userController = {
             console.log(err);
         }
 
-        console.log(otp)
-
         mailer(email, otp);
 
         res.status(200).send(true);

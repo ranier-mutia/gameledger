@@ -43,7 +43,7 @@ const ListForm = (props) => {
 
         setIsLoading((prev) => ({ ...prev, setFavorite: true }));
 
-        await axios.post('http://localhost:3000/favorites/setFavorite', { id: id, email: user.email, gameID: props.gameID }, { signal })
+        await axios.post('http://localhost:3000/preferences/setFavorite', { id: id, email: user.email, gameID: props.gameID }, { signal })
             .then((response) => {
                 setFavoriteData(response.data);
                 setIsLoading((prev) => ({ ...prev, setFavorite: false }));

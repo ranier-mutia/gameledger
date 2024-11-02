@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Search from '../../components/Search.jsx'
 import Logo from '../../components/Logo.jsx'
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import UserMenu from '../../components/UserMenu.jsx'
 
 const Header = (props) => {
 
-    const user = useUserContext();
+    const user = useUserContext()
 
     return (
         <header className='fixed z-40 bg-gray-800 w-full shadow-xl'>

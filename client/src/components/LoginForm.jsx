@@ -36,8 +36,7 @@ const LoginForm = (props) => {
 
                 if (!user) throw new Error();
 
-                props.authenticateUser();
-                props.onLoginClickHandler();
+                window.location.reload();
 
             })
             .catch((error) => {

@@ -7,6 +7,7 @@ const Games = (props) => {
     const [games, setGames] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [offset, setOffset] = useState(0);
+    const [hasNext, setHasNext] = useState(true);
 
     const controllerRef = useRef();
 
@@ -14,20 +15,32 @@ const Games = (props) => {
 
     const getGames = async (signal) => {
 
-        setIsLoading(true);
+        if (hasNext) {
 
-        await axios.post('http://localhost:3000/games/getAllGames', { offset, type }, { signal })
-            .then((response) => {
-                setGames((prevGames) => [...prevGames, ...response.data]);
-                setOffset(prevOffset => prevOffset + 30);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                if (error.code != "ERR_CANCELED") {
-                    console.log(error);
-                }
+            setIsLoading(true);
 
-            });
+            await axios.post('http://localhost:3000/games/getAllGames', { offset, type }, { signal })
+                .then((response) => {
+
+                    const nextOffset = response.data.length - 30;
+                    const result = response.data.slice(0, 30);
+
+                    setGames((prevGames) => [...prevGames, ...result]);
+                    setOffset(prevOffset => prevOffset + 30);
+                    setIsLoading(false);
+
+                    if (nextOffset <= 0) { setHasNext(false) }
+
+                })
+                .catch((error) => {
+                    if (error.code != "ERR_CANCELED") {
+                        console.log(error);
+                    }
+
+                });
+
+        }
+
     }
 
     const loadingCard = (count) => {

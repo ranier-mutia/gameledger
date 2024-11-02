@@ -41,7 +41,7 @@ const UserMenu = (props) => {
         <div className="h-8 w-8">
             <button data-dropdown-toggle="userMenuButton" type="button" className='w-full h-full rounded-full hover:opacity-75 focus:opacity-75 select-none' onClick={onCLickHandler} ref={buttonRef}>
 
-                <img className="rounded-full" src="profile_pictures/default.png" alt="a" draggable="false" />
+                <img className="rounded-full" src={"/profile_pictures/default.png"} alt="profile_picture" draggable="false" />
 
             </button>
 

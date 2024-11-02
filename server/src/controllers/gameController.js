@@ -82,19 +82,22 @@ const gameController = {
 
         const id = req.body.id;
 
-        const gameInfo = await gameService.gameInfo(id);
+        const game = await gameService.gameInfo(id);
+
+        let gameInfo = "";
+        if (game) [gameInfo] = game;
 
         if (gameInfo) {
-            let date = new Date(gameInfo[0].first_release_date * 1000);
-            gameInfo[0].release_date = date.getFullYear();
-        }
+            let date = new Date(gameInfo.first_release_date * 1000);
+            gameInfo.release_date = date.getFullYear();
 
-        if (gameInfo[0].artworks) {
-            gameInfo[0].artwork = gameInfo[0].artworks[0].url.replace(/t_thumb/, "t_screenshot_med");
-        }
+            if (gameInfo.artworks) {
+                gameInfo.artwork = gameInfo.artworks[0].url.replace(/t_thumb/, "t_screenshot_med");
+            }
 
-        if (gameInfo[0].screenshots) {
-            gameInfo[0].screenshot = gameInfo[0].screenshots[0].url.replace(/t_thumb/, "t_screenshot_med");
+            if (gameInfo.screenshots) {
+                gameInfo.screenshot = gameInfo.screenshots[0].url.replace(/t_thumb/, "t_screenshot_med");
+            }
         }
 
         res.status(200).send(gameInfo);

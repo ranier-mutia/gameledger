@@ -24,7 +24,11 @@ const listService = {
     updateStatus: async (id, status) => {
         const data = await db.query(`UPDATE lists SET status = $1 WHERE id = $2 RETURNING *`, [status, id]);
         return data.rows;
-    }
+    },
+    getListScore: async (id) => {
+        const data = await db.query(`SELECT id, score FROM lists WHERE id = $1`, [id]);
+        return data.rows;
+    },
 
 }
 
