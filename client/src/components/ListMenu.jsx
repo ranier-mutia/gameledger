@@ -1,22 +1,20 @@
-import React, { useEffect, useState, useRef, useContext } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import ListForm from './ListForm.jsx';
-import ListContext from '../hooks/ListContext.jsx'
 import axios from 'axios';
 
 const ListMenu = (props) => {
 
     const [game, setGame] = useState();
-    const showListMenu = useContext(ListContext);
     const controllerRef = useRef();
     const listMenuRef = useRef();
 
     const onClickHandler = () => {
-        showListMenu(false);
+        props.onListCloseHandler();
     }
 
     function outsideClickHandler(e) {
         if (props.isShown && !listMenuRef.current?.contains(e.target)) {
-            showListMenu(false);
+            props.onListCloseHandler();
         }
     }
 
@@ -66,7 +64,7 @@ const ListMenu = (props) => {
 
     if (props.isShown) {
         return (
-            <div className='fixed flex justify-center items-center h-screen w-screen bg-opacity-80 bg-black z-50'>
+            <div className='fixed top-0 left-0 flex justify-center items-center h-screen w-screen bg-opacity-80 bg-black z-50'>
 
                 <div className={`relative bg-gray-800 w-full h-full sm:rounded-xl ${game ? 'sm:h-auto' : 'sm:h-2/5'} sm:min-h-96 sm:w-4/5 md:w-3/5 xl:w-2/5 pb-8 shadow-xl overflow-y-auto sm:overflow-y-visible`} ref={listMenuRef}>
 
@@ -93,7 +91,7 @@ const ListMenu = (props) => {
                                 <div className='flex flex-col h-5/6 sm:h-auto bg-gray-800 sm:rounded-b-xl'>
                                     <div className='font-medium z-20 text-center sm:text-left text-blue-400 text-xl my-1 sm:ps-36 mt-16 sm:mt-3 mx-10 sm:me-10'>{game.name}</div>
 
-                                    <ListForm isShown={props.isShown} listData={props.listData} favoriteData={props.favoriteData} gameID={game.id} showListMenu={showListMenu} />
+                                    <ListForm isShown={props.isShown} listData={props.listData} favoriteData={props.favoriteData} gameID={game.id} onListCloseHandler={props.onListCloseHandler} updateData={props.updateData} />
                                 </div>
                             </div>
                         </div>

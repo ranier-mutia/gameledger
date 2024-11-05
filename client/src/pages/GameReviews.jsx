@@ -1,31 +1,45 @@
 import React, { useEffect, useState, useRef } from 'react'
-import Card from '../components/Card';
 import axios from 'axios'
+import { useParams } from "react-router-dom";
+import ReviewCard from '../components/ReviewCard';
 
-const Games = (props) => {
+const GameReviews = (props) => {
 
-    const [games, setGames] = useState([]);
+    const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [offset, setOffset] = useState(0);
     const [hasNext, setHasNext] = useState(true);
 
     const controllerRef = useRef();
 
-    var type = props.type;
+    const params = useParams();
+    const id = params.id;
 
-    const getGames = async (signal) => {
+    const loadingCard = (count) => {
+
+        let cards = []
+
+        for (let i = 0; i < count; i++) {
+            cards.push(<ReviewCard key={i} isLoading={true} />)
+        }
+
+        return cards;
+
+    }
+
+    const getReviews = async (signal) => {
 
         if (hasNext) {
 
             setIsLoading(true);
 
-            await axios.post('http://localhost:3000/games/getAllGames', { offset, type }, { signal })
+            await axios.post('http://localhost:3000/reviews/getAllGameReviews', { id, offset }, { signal })
                 .then((response) => {
 
                     const nextOffset = response.data.length - 24;
                     const result = response.data.slice(0, 24);
 
-                    setGames((prevGames) => [...prevGames, ...result]);
+                    setReviews((reviews) => [...reviews, ...result]);
                     setOffset(prevOffset => prevOffset + 24);
                     setIsLoading(false);
 
@@ -43,19 +57,6 @@ const Games = (props) => {
 
     }
 
-    const loadingCard = (count) => {
-
-        let cards = []
-
-        for (let i = 0; i < count; i++) {
-            cards.push(<Card key={i} isLoading={true} />)
-        }
-
-        return cards;
-
-    }
-
-
     useEffect(() => {
 
         if (controllerRef.current) {
@@ -65,14 +66,11 @@ const Games = (props) => {
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
 
-
-        getGames(signal);
-
+        getReviews(signal);
 
         return () => controllerRef.current.abort();
 
-    }, []);
-
+    }, [id]);
 
     useEffect(() => {
 
@@ -88,7 +86,7 @@ const Games = (props) => {
                 controllerRef.current = new AbortController();
                 const signal = controllerRef.current.signal;
 
-                getGames(signal);
+                getReviews(signal);
             }
         };
 
@@ -102,23 +100,22 @@ const Games = (props) => {
         };
     }, [isLoading]);
 
-
     return (
         <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
             <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
                 <div>
-                    <h1 className='text-white text-xl font-medium'>{type}</h1>
+                    <h1 className='text-white text-xl font-medium'>Reviews</h1>
 
-                    <div className="flex w-full h-10 bg-gray-800 my-3"></div>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 xl:gap-4 mt-4'>
+                        {reviews.length ? reviews.map((item, i) => {
 
-                    <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
-                        {games.length ? games.map((item, i) => {
                             return (
-                                <Card key={item.id} id={item.id} name={item.name} title={type} slug={item.slug} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={false} />
+                                < ReviewCard key={item.id} review={item} isLoading={false} type="specific" />
                             )
+
                         }) : loadingCard(24)}
-                        {isLoading && loadingCard(6)}
+                        {isLoading && loadingCard(4)}
                     </div>
                 </div>
 
@@ -128,5 +125,5 @@ const Games = (props) => {
     )
 }
 
-export default Games
+export default GameReviews
 

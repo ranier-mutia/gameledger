@@ -29,6 +29,10 @@ const listService = {
         const data = await db.query(`SELECT id, score FROM lists WHERE id = $1`, [id]);
         return data.rows;
     },
+    getStatusCount: async (id) => {
+        const data = await db.query(`SELECT game_id, sum(case when status = 'plan' then 1 else 0 end) AS plan, sum(case when status = 'playing' then 1 else 0 end) AS playing, sum(case when status = 'played' then 1 else 0 end) AS played FROM lists WHERE game_id = $1 GROUP BY game_id`, [id]);
+        return data.rows;
+    }
 
 }
 

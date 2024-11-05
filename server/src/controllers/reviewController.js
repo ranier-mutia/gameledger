@@ -101,6 +101,26 @@ const reviewController = {
         await reviewService.deleteReview(id);
 
         res.status(200).send(true);
+    },
+    getGameReviews: async (req, res) => {
+        const id = req.body.id
+
+        let result = ""
+        if (id) {
+            result = await reviewService.getGameReviews(id);
+        }
+
+        res.status(200).send(result);
+    },
+    getAllGameReviews: async (req, res) => {
+        const { id, offset } = req.body
+
+        let result = ""
+        if (!isNaN(id)) {
+            result = await reviewService.getAllGameReviews(id, offset);
+        }
+
+        res.status(200).send(result);
     }
 
 }

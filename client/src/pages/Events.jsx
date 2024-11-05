@@ -21,11 +21,11 @@ const Events = (props) => {
             await axios.post('http://localhost:3000/events/getEvents', { offset }, { signal })
                 .then((response) => {
 
-                    const nextOffset = response.data.length - 12;
-                    const result = response.data.slice(0, 12);
+                    const nextOffset = response.data.length - 16;
+                    const result = response.data.slice(0, 16);
 
                     setEvents((prevEvents) => [...prevEvents, ...result]);
-                    setOffset(prevOffset => prevOffset + 12);
+                    setOffset(prevOffset => prevOffset + 16);
                     setIsLoading(false);
 
                     if (nextOffset <= 0) { setHasNext(false) }
@@ -113,7 +113,7 @@ const Events = (props) => {
                             return (
                                 < EventCard key={item.id} id={item.id} name={item.name} slug={item.slug} img={item.logo ? item.logo : null} isLoading={false} />
                             )
-                        }) : loadingCard(12)}
+                        }) : loadingCard(16)}
                         {isLoading && loadingCard(4)}
                     </div>
                 </div>

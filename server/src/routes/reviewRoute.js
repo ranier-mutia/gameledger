@@ -18,4 +18,10 @@ router.route("/setReview")
 router.route("/deleteReview")
     .post(controller.deleteReview);
 
+router.route("/getGameReviews")
+    .post(controller.getGameReviews);
+
+router.route("/getAllGameReviews")
+    .post(controller.getAllGameReviews);
+
 export default router;

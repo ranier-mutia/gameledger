@@ -21,7 +21,7 @@ const eventService = {
     getEvents: async (offset) => {
 
         config.url = baseURL + '/events';
-        config.data = `fields name, event_logo.url, start_time, end_time, slug; where start_time != null; sort start_time desc; offset ${offset}; limit 13;`;
+        config.data = `fields name, event_logo.url, start_time, end_time, slug; where start_time != null; sort start_time desc; offset ${offset}; limit 17;`;
 
         return axios.request(config)
             .then(response => {

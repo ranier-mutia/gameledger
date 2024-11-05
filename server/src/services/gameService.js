@@ -52,7 +52,7 @@ const gameService = {
     allDefaultGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, rating, slug; sort rating desc; offset ${offset}; limit 31;`;
+        config.data = `fields name, cover.url, rating, slug; sort rating desc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {
@@ -66,7 +66,7 @@ const gameService = {
     allHypedGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date, hypes, slug; where first_release_date > ${millis}; sort hypes desc; offset ${offset}; limit 31;`;
+        config.data = `fields name, cover.url, first_release_date, hypes, slug; where first_release_date > ${millis}; sort hypes desc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {
@@ -80,7 +80,7 @@ const gameService = {
     allNewGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date < ${millis}; sort first_release_date desc; offset ${offset}; limit 31;`;
+        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date < ${millis}; sort first_release_date desc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {
@@ -94,7 +94,7 @@ const gameService = {
     allUpcomingGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date > ${millis}; sort first_release_date asc; offset ${offset}; limit 31;`;
+        config.data = `fields name, cover.url, first_release_date, slug; where first_release_date > ${millis}; sort first_release_date asc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {
@@ -108,7 +108,7 @@ const gameService = {
     allBestGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, category, rating, rating_count, slug; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 31;`;
+        config.data = `fields name, cover.url, category, rating, rating_count, slug; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {

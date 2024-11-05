@@ -2,13 +2,14 @@ import React, { useEffect, useState, useContext, useRef } from 'react'
 import { Transition } from '@headlessui/react'
 import { useUserContext } from '../hooks/UserContext.jsx'
 import LoginContext from '../hooks/LoginContext.jsx'
-import ListContext from '../hooks/ListContext.jsx'
+import ListMenu from './ListMenu.jsx'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 const GameOptions = (props) => {
 
     const [isShown, setIsShown] = useState(false);
+    const [isListShown, setIsListShown] = useState(false);
     const [isShownStatus, setIsShownStatus] = useState(false);
     const [listData, setListData] = useState("");
     const [favoriteData, setFavoriteData] = useState("");
@@ -22,7 +23,6 @@ const GameOptions = (props) => {
 
     const user = useUserContext();
     const showLoginMenu = useContext(LoginContext);
-    const showListMenu = useContext(ListContext);
 
     const menuRef = useRef();
     const controllerRef = useRef();
@@ -48,7 +48,12 @@ const GameOptions = (props) => {
     const onListClickHandler = () => {
         if (!isLoggedIn()) return
 
-        showListMenu(true, props.slug, listData, favoriteData);
+        setIsListShown(true);
+
+    }
+
+    const onListCloseHandler = () => {
+        setIsListShown(false);
     }
 
     const onStatusClickHandler = () => {
@@ -259,6 +264,10 @@ const GameOptions = (props) => {
                     </div>
                 </Transition>
 
+                {isListShown &&
+                    <ListMenu isShown={isListShown} slug={props.slug} listData={listData} favoriteData={favoriteData} onListCloseHandler={onListCloseHandler} />
+                }
+
             </div>
         )
     } else {
@@ -339,6 +348,10 @@ const GameOptions = (props) => {
                     </div>
 
                 </Transition>
+
+                {isListShown &&
+                    <ListMenu isShown={isListShown} slug={props.slug} listData={listData} favoriteData={favoriteData} onListCloseHandler={onListCloseHandler} />
+                }
 
             </div>
         )

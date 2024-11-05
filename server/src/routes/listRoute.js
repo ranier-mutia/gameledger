@@ -15,6 +15,9 @@ router.route("/deleteListData")
 router.route("/setStatus")
     .post(controller.setStatus);
 
+router.route("/getStatusCount")
+    .post(controller.getStatusCount);
+
 
 
 export default router;

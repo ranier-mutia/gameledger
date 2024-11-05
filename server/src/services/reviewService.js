@@ -2,7 +2,7 @@ import db from "../config/database.js"
 
 const reviewService = {
     getReviews: async (offset) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email ORDER BY reviews.date_added DESC LIMIT 13 OFFSET ${offset}`);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email ORDER BY reviews.date_added DESC LIMIT 17 OFFSET ${offset}`);
         return data.rows;
 
     },
@@ -36,6 +36,14 @@ const reviewService = {
     },
     removeRating: async (id, rating) => {
         const data = await db.query(`UPDATE reviews SET "${rating}" = "${rating}" - 1 WHERE id = ${id} RETURNING "like", "dislike"`);
+        return data.rows;
+    },
+    getGameReviews: async (id) => {
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 ORDER BY reviews.date_added DESC LIMIT 4`, [id]);
+        return data.rows;
+    },
+    getAllGameReviews: async (id, offset) => {
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 ORDER BY reviews.date_added DESC LIMIT 25 OFFSET ${offset}`, [id]);
         return data.rows;
     }
 

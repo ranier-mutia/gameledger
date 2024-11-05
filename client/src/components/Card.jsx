@@ -18,8 +18,9 @@ const Card = (props) => {
 
     const onMouseEnterHandler = () => {
 
+        const cardPos = cardRef.current.getBoundingClientRect();
+
         hoverTimeOut = setTimeout(() => {
-            const cardPos = cardRef.current.getBoundingClientRect();
 
             const centerX = cardPos.left + cardPos.width / 2
             const centerY = cardPos.top + cardPos.height / 2
@@ -90,7 +91,7 @@ const Card = (props) => {
     if (props.isLoading) {
         return (
 
-            <div className='relative bg-gray-800 border-slate-900 shadow-2xl rounded-xl w-full sm:w-40 xl:w-full animate-pulse'>
+            <div className='relative bg-gray-800 border-slate-900 shadow-2xl rounded-xl w-full sm:w-60 xl:w-full animate-pulse'>
                 <div className="h-40 sm:h-60"></div>
                 <div className="p-2 min-h-[3.5rem] me-3 space-y-3">
                     <div className='flex space-x-3'>
@@ -105,7 +106,7 @@ const Card = (props) => {
 
     } else {
         return (
-            <div className='relative bg-gray-800 hover:bg-gray-900 shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full sm:w-40 xl:w-full group' ref={cardRef}>
+            <div className='relative bg-gray-800 hover:bg-gray-900 shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full xl:w-full group' ref={cardRef}>
 
                 <input type="hidden" id="gameID" name='gameID' value={props.id} />
 

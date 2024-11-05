@@ -11,17 +11,13 @@ const listController = {
     updateListData: async (req, res) => {
         const { id, gameID, email, status, score, dateStart, dateEnd } = req.body;
 
-        let type = "";
-
         if (!id) {
             await listService.addListData(gameID, email, status, score, dateStart, dateEnd);
-            type = "add"
         } else {
             await listService.updateListData(id, status, score, dateStart, dateEnd);
-            type = "update"
         }
 
-        res.status(200).send(type);
+        res.status(200).send(true);
 
     },
     deleteListData: async (req, res) => {
@@ -42,6 +38,17 @@ const listController = {
             [result] = await listService.updateStatus(id, status);
         }
 
+        res.status(200).send(result);
+    },
+    getStatusCount: async (req, res) => {
+
+        const id = req.body.id;
+
+        let result = "";
+
+        if (id) {
+            [result] = await listService.getStatusCount(id);
+        }
         res.status(200).send(result);
     }
 

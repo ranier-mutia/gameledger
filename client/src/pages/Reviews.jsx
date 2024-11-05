@@ -33,11 +33,11 @@ const Reviews = (props) => {
             await axios.post('http://localhost:3000/reviews/getReviews', { offset }, { signal })
                 .then((response) => {
 
-                    const nextOffset = response.data.length - 12;
-                    const result = response.data.slice(0, 12);
+                    const nextOffset = response.data.length - 16;
+                    const result = response.data.slice(0, 16);
 
                     setReviews((reviews) => [...reviews, ...result]);
-                    setOffset(prevOffset => prevOffset + 12);
+                    setOffset(prevOffset => prevOffset + 16);
                     setIsLoading(false);
 
                     if (nextOffset <= 0) { setHasNext(false) }
@@ -108,10 +108,10 @@ const Reviews = (props) => {
                         {reviews.length ? reviews.map((item, i) => {
 
                             return (
-                                < ReviewCard key={item.id} review={item} isLoading={false} />
+                                < ReviewCard key={item.id} review={item} isLoading={false} type="all" />
                             )
 
-                        }) : loadingCard(12)}
+                        }) : loadingCard(16)}
                         {isLoading && loadingCard(4)}
                     </div>
                 </div>
