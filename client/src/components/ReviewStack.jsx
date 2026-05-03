@@ -12,7 +12,7 @@ const ReviewStack = (props) => {
     const navigate = useNavigate();
 
     const onViewAllClickHandler = () => {
-        navigate("/reviews/" + props.id)
+        navigate("/reviews/" + props.slug, { state: { id: props.id } })
     }
 
     useEffect(() => {

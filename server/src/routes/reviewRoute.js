@@ -24,4 +24,10 @@ router.route("/getGameReviews")
 router.route("/getAllGameReviews")
     .post(controller.getAllGameReviews);
 
+router.route("/getUserReviews")
+    .post(controller.getUserReviews);
+
+router.route("/getAllUserReviews")
+    .post(controller.getAllUserReviews);
+
 export default router;

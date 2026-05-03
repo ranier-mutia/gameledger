@@ -23,7 +23,7 @@ const ReviewCard = (props) => {
 
     } else {
         return (
-            <div className='h-auto bg-gray-800 hover:bg-gray-900 shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full group' onMouseEnter={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)}>
+            <div className='h-auto bg-gray-800 hover:bg-black shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full group' onMouseEnter={() => setIsMouseOver(true)} onMouseLeave={() => setIsMouseOver(false)}>
 
                 <Link to={"/review/" + props.review.id}>
 
@@ -71,11 +71,11 @@ const ReviewCard = (props) => {
                                 <div>{props.review.like.toLocaleString()}</div>
                             </div>
 
-                            <div className='z-10'>- {props.review.username}</div>
+                            <div className='z-10'>{!props.isProfile && ("- " + props.review.username)}</div>
 
                         </div>
 
-                        <div className='absolute bottom-0 w-full h-2/3 bg-gray-800 rounded-b-xl group-hover:bg-gray-900 '>
+                        <div className='absolute bottom-0 w-full h-2/3 bg-gray-800 rounded-b-xl group-hover:bg-black '>
 
                         </div>
 

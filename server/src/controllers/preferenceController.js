@@ -1,5 +1,7 @@
+import gameService from "../services/gameService.js";
 import preferenceService from "../services/preferenceService.js";
 import reviewService from "../services/reviewService.js";
+import activityService from "../services/activityService.js";
 
 const preferenceController = {
     getFavoriteData: async (req, res) => {
@@ -63,7 +65,105 @@ const preferenceController = {
 
         res.status(200).send(data);
 
-    }
+    },
+    setActivityPreference: async (req, res) => {
+        const { actID, prefID, email, liked } = req.body;
+
+        let result = "";
+        let rating = "";
+
+        if (liked) {
+
+            await preferenceService.removeActivityPreference(prefID);
+            [rating] = await activityService.removeRating(actID);
+
+
+        } else {
+
+            [result] = await preferenceService.addActivityPreference(actID, email);
+            [rating] = await activityService.addRating(actID);
+
+        }
+
+        const data = { ...result, likes: rating.likes }
+
+        res.status(200).send(data);
+
+    },
+    getFavoriteGames: async (req, res) => {
+        const email = req.body.email;
+
+        let ids = "";
+
+        if (email) {
+            ids = await preferenceService.getFavoriteGames(email);
+        }
+
+        let gameIDs = [];
+
+        if (ids) {
+            Object.values(ids).forEach((item) => {
+
+                gameIDs = [...gameIDs, item.target_id];
+
+            })
+        }
+
+        let games = ""
+        if (gameIDs) {
+            games = await gameService.getFavoriteGames(gameIDs);
+        }
+
+        if (games) {
+            Object.values(games).forEach((item) => {
+
+                if (item.cover) {
+                    item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+                }
+
+            })
+        }
+
+
+        res.status(200).send(games);
+    },
+    getAllFavoriteGames: async (req, res) => {
+        const { email, offset } = req.body;
+
+        let ids = "";
+
+        if (email) {
+            ids = await preferenceService.getAllFavoriteGames(email, offset);
+        }
+
+        let gameIDs = [];
+
+        if (ids) {
+            Object.values(ids).forEach((item) => {
+
+                gameIDs = [...gameIDs, item.target_id];
+
+            })
+        }
+
+        let games = ""
+        if (gameIDs) {
+            games = await gameService.getFavoriteGames(gameIDs);
+        }
+
+        if (games) {
+            Object.values(games).forEach((item) => {
+
+                if (item.cover) {
+                    item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+                }
+
+            })
+        }
+
+
+        res.status(200).send(games);
+    },
 }
 
 export default preferenceController;

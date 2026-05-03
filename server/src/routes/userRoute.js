@@ -39,4 +39,7 @@ router.route("/verifyOTP")
 router.route("/resetPassword")
     .post(controller.resetPassword);
 
+router.route("/getUser")
+    .post(controller.getUser);
+
 export default router;

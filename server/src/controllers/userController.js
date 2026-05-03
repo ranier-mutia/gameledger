@@ -25,7 +25,7 @@ const userController = {
     authUser: async (req, res) => {
 
         if (req.isAuthenticated()) {
-            res.status(200).send({ username: req.user.username, email: req.user.email });
+            res.status(200).send({ id: req.user.id, username: req.user.username, email: req.user.email, profile_picture: req.user.profile_picture });
         }
 
     },
@@ -153,6 +153,18 @@ const userController = {
         } catch (err) {
             console.log(err);
         }
+
+    },
+    getUser: async (req, res) => {
+
+        const id = req.body.id;
+
+        let result = "";
+        if (id) {
+            [result] = await userService.getUserById(id);
+        }
+
+        res.status(200).send(result);
 
     }
 

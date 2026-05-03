@@ -36,7 +36,7 @@ const gameService = {
             };
 
             query games "Best" {
-                fields name, platforms, cover.url, slug, genres.name, rating, rating_count, category, first_release_date; where rating_count > 200 & category = (0, 3, 8, 9, 10) & platforms = (${platformIDs}); sort rating desc; limit 10;
+                fields name, platforms, cover.url, slug, genres.name, rating, rating_count, first_release_date; where rating_count > 200 & game_type = (0, 3, 8, 9, 10) & platforms = (${platformIDs}); sort rating desc; limit 10;
             };
         `;
 
@@ -108,7 +108,7 @@ const gameService = {
     allBestGames: async (offset) => {
 
         config.url = baseURL + '/games';
-        config.data = `fields name, cover.url, category, rating, rating_count, slug; where rating_count > 200 & category = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 25;`;
+        config.data = `fields name, cover.url, rating, rating_count, slug; where rating_count > 200 & game_type = (0, 3, 8, 9, 10); sort rating desc; offset ${offset}; limit 25;`;
 
         return axios.request(config)
             .then(response => {
@@ -179,6 +179,48 @@ const gameService = {
 
         config.url = baseURL + '/games';
         config.data = `fields name, cover.url, slug; where id = (${ids}); limit 10;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getGameGenres: async (ids) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields genres.name; where id = (${ids}); limit 500;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getFavoriteGames: async (ids) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, slug; where id = (${ids}); limit 6;`;
+
+        return axios.request(config)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error("Failed to make request:", error.message);
+            })
+
+    },
+    getGameInfoActivities: async (ids) => {
+
+        config.url = baseURL + '/games';
+        config.data = `fields name, cover.url, slug; where id = (${ids});`;
 
         return axios.request(config)
             .then(response => {

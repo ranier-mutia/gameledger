@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { useUserContext } from '../hooks/UserContext.jsx'
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import JoditEditor, { Jodit } from 'jodit-react';
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
@@ -19,8 +19,12 @@ const Review = (props) => {
 
     const user = useUserContext();
 
-    const params = useParams();
-    const id = params.id;
+    const { state } = useLocation();
+    let id = "";
+    let type = "";
+    if (state) {
+        ({ id, type } = state);
+    }
 
     const navigate = useNavigate();
 
@@ -149,6 +153,7 @@ const Review = (props) => {
 
     useEffect(() => {
         if (!user.loggedIn) return
+        if (!id) return navigate("/");
 
         if (controllerRef.current) {
             controllerRef.current.abort();
@@ -157,7 +162,7 @@ const Review = (props) => {
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
 
-        props.type == "edit" ? getReview(signal) : getGame(signal);
+        type == "edit" ? getReview(signal) : getGame(signal);
 
         return () => {
             controllerRef.current.abort();
@@ -165,7 +170,7 @@ const Review = (props) => {
 
     }, [user])
 
-    if (user.loggedIn) {
+    if (user.loggedIn && id) {
         return (
 
             <div className='h-full w-full relative'>
@@ -173,9 +178,9 @@ const Review = (props) => {
 
                 <div className='flex absolute w-full xl:ps-[17rem]'>
 
-                    <div className='flex h-auto min-h-80 w-full mx-auto bg-gray-600'>
+                    <div className='flex h-auto min-h-80 w-full mx-auto bg-gray-900'>
                         {game && (game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-80 w-full " /> : game.screenshot ? <img src={game.screenshot} alt={game.name} className="h-auto min-h-80 w-full" /> : <div className='content-center mx-auto text-white pt-12'>No Cover</div>)}
-                        {review && (review.game_artworks ? <img src={review.game_artworks[0].url} alt={review.game_name} className="h-auto min-h-80 w-full " /> : review.game_screenshots ? <img src={review.game_screenshots[0].url} alt={review.game_name} className="h-auto min-h-80 w-full" /> : <div className='content-center mx-auto text-white pt-12'>No Cover</div>)}
+                        {review && (review.game_artworks ? <img src={review.game_artworks[0].url} alt={review.game_name} className="h-auto min-h-80 w-full " /> : review.game_screenshots && <img src={review.game_screenshots[0].url} alt={review.game_name} className="h-auto min-h-80 w-full" />)}
                     </div>
 
                     <div className='absolute bg-gray-700 h-full w-full top-60 sm:top-80 left-0'></div>

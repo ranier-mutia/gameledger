@@ -98,8 +98,8 @@ const Review = () => {
             {review &&
                 <div className='flex absolute w-full xl:ps-[17rem]'>
 
-                    <div className='flex h-auto min-h-80 w-full mx-auto bg-gray-600'>
-                        {review.game_artworks ? <img src={review.game_artworks[0].url} alt={review.game_name} className="h-auto min-h-80 w-full " /> : review.game_screenshots ? <img src={review.game_screenshots[0].url} alt={review.game_name} className="h-auto min-h-80 w-full" /> : <div className='content-center mx-auto text-white pt-12'>No Cover</div>}
+                    <div className='flex h-auto max-h-[600px] min-h-80 w-full mx-auto bg-gray-900'>
+                        {review.game_artworks ? <img src={review.game_artworks[0].url} alt={review.game_name} className="h-auto min-h-80 w-full " /> : review.game_screenshots && <img src={review.game_screenshots[0].url} alt={review.game_name} className="h-auto min-h-80 w-full" />}
                     </div>
 
                     <div className='absolute bg-gray-700 h-full w-full top-60 sm:top-80 left-0'></div>

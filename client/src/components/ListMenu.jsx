@@ -45,12 +45,6 @@ const ListMenu = (props) => {
 
         getGame(signal);
 
-        if (props.isShown) {
-            document.body.style.overflow = 'hidden';
-        }
-
-        !props.isShown ? document.body.style.overflow = 'unset' : null;
-
         document.addEventListener('mousedown', outsideClickHandler);
 
         return () => {
@@ -78,8 +72,8 @@ const ListMenu = (props) => {
 
                     {game ?
                         <div className='overflow-hidden'>
-                            <div className='flex h-auto min-h-56 sm:min-h-36 w-full sm:max-h-[24rem] bg-gray-600 sm:rounded-t-xl'>
-                                {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-36 w-full sm:rounded-t-xl" /> : game.screenshot ? <img src={game.screenshot} alt={game.name} className="h-auto min-h-36 w-full sm:rounded-t-xl" /> : <div className='content-center  mx-auto text-white pt-3'>No Cover</div>}
+                            <div className='flex h-auto min-h-56 sm:min-h-36 w-full sm:max-h-[24rem] bg-gray-900 sm:rounded-t-xl'>
+                                {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-36 w-full sm:rounded-t-xl" /> : game.screenshot && <img src={game.screenshot} alt={game.name} className="h-auto min-h-36 w-full sm:rounded-t-xl" />}
                             </div>
 
                             <div className="absolute z-20 top-16 left-1/2 -translate-x-1/2 sm:transform-none sm:top-14 sm:left-10 flex justify-center align-middle h-40 w-32 bg-gray-600 rounded-xl border border-gray-800 shadow-xl">

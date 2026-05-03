@@ -102,7 +102,7 @@ const Reviews = (props) => {
             <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
                 <div>
-                    <h1 className='text-white text-xl font-medium'>Reviews</h1>
+                    <h1 className='text-white text-xl font-medium'>REVIEWS</h1>
 
                     <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 xl:gap-4 mt-4'>
                         {reviews.length ? reviews.map((item, i) => {

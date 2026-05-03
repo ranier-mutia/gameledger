@@ -121,6 +121,104 @@ const reviewController = {
         }
 
         res.status(200).send(result);
+    },
+    getUserReviews: async (req, res) => {
+        const email = req.body.email;
+
+        let reviews;
+        if (email) {
+            reviews = await reviewService.getUserReviews(email);
+        }
+
+        let gameIDs = [];
+        if (reviews) {
+
+            Object.values(reviews).forEach((item) => {
+
+                gameIDs = [...gameIDs, item.game_id];
+
+            })
+        }
+
+        let gameInfo;
+        if (gameIDs.length) {
+            gameInfo = await gameService.gamesInfo(gameIDs);
+        }
+
+        let result;
+        if (gameInfo) {
+            result = reviews.map((review) => {
+
+                let [game] = gameInfo.filter((item) => {
+                    return item.id == review.game_id
+                })
+
+                Object.values({ game }).forEach((item) => {
+
+                    if (item.artworks) {
+                        item.artworks[0].url = item.artworks[0].url.replace(/t_thumb/, "t_screenshot_med");
+                    }
+                    if (item.screenshots) {
+                        item.screenshots[0].url = item.screenshots[0].url.replace(/t_thumb/, "t_screenshot_med");
+                    }
+
+                })
+
+                return { ...review, game_name: game.name, game_artworks: game.artworks, game_screenshots: game.screenshots }
+
+            })
+        }
+
+        res.status(200).send(result);
+    },
+    getAllUserReviews: async (req, res) => {
+        const { email, offset } = req.body;
+
+        let reviews;
+        if (email) {
+            reviews = await reviewService.getAllUserReviews(email, offset);
+        }
+
+        let gameIDs = [];
+        if (reviews) {
+
+            Object.values(reviews).forEach((item) => {
+
+                gameIDs = [...gameIDs, item.game_id];
+
+            })
+        }
+
+        let gameInfo;
+        if (gameIDs.length) {
+            gameInfo = await gameService.gamesInfo(gameIDs);
+        }
+
+        let result;
+        if (gameInfo) {
+            result = reviews.map((review) => {
+
+                let [game] = gameInfo.filter((item) => {
+                    return item.id == review.game_id
+                })
+
+                Object.values({ game }).forEach((item) => {
+
+                    if (item.artworks) {
+                        item.artworks[0].url = item.artworks[0].url.replace(/t_thumb/, "t_screenshot_med");
+                    }
+                    if (item.screenshots) {
+                        item.screenshots[0].url = item.screenshots[0].url.replace(/t_thumb/, "t_screenshot_med");
+                    }
+
+                })
+
+                return { ...review, game_name: game.name, game_artworks: game.artworks, game_screenshots: game.screenshots }
+
+            })
+        }
+
+        res.status(200).send(result);
     }
 
 }

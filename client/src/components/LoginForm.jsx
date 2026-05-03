@@ -36,6 +36,7 @@ const LoginForm = (props) => {
 
                 if (!user) throw new Error();
 
+                props.authenticateUser();
                 window.location.reload();
 
             })
@@ -210,7 +211,6 @@ const LoginForm = (props) => {
         } else if (status.resetSuccess) {
             props.onTypeClickHandler();
         }
-
 
     }
 

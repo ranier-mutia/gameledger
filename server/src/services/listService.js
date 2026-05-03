@@ -6,7 +6,7 @@ const listService = {
         return data.rows;
     },
     addListData: async (gameID, email, status, score, dateStart, dateEnd) => {
-        const data = await db.query(`INSERT INTO lists (game_id, email, status, score, date_start, date_end, date_added) VALUES ($1,$2,$3,$4,$5,$6,to_timestamp(${Date.now()} / 1000.0))`, [gameID, email, status, score, dateStart, dateEnd]);
+        const data = await db.query(`INSERT INTO lists (game_id, email, status, score, date_start, date_end, date_added) VALUES ($1,$2,$3,$4,$5,$6,to_timestamp(${Date.now()} / 1000.0)) RETURNING id`, [gameID, email, status, score, dateStart, dateEnd]);
         return data.rows;
     },
     updateListData: async (id, status, score, dateStart, dateEnd) => {
@@ -32,7 +32,23 @@ const listService = {
     getStatusCount: async (id) => {
         const data = await db.query(`SELECT game_id, sum(case when status = 'plan' then 1 else 0 end) AS plan, sum(case when status = 'playing' then 1 else 0 end) AS playing, sum(case when status = 'played' then 1 else 0 end) AS played FROM lists WHERE game_id = $1 GROUP BY game_id`, [id]);
         return data.rows;
-    }
+    },
+    getGameCount: async (email) => {
+        const data = await db.query(`SELECT count(id) AS total, sum(case when status = 'plan' then 1 else 0 end) AS plan, sum(case when status = 'playing' then 1 else 0 end) AS playing, sum(case when status = 'played' then 1 else 0 end) AS played FROM lists WHERE email = $1 GROUP BY email`, [email]);
+        return data.rows;
+    },
+    getGameIDs: async (email) => {
+        const data = await db.query(`SELECT game_id FROM lists WHERE email = $1`, [email]);
+        return data.rows;
+    },
+    getAllUserLists: async (email, filter, offset) => {
+        const data = await db.query(`SELECT id, game_id, status, score, TO_CHAR(date_start, 'YYYY-MM-dd') as start_date, TO_CHAR(date_end, 'YYYY-MM-dd') as end_date FROM lists WHERE email = $1 AND status = $2 LIMIT 13 OFFSET $3`, [email, filter, offset]);
+        return data.rows;
+    },
+    getGameScore: async (id) => {
+        const data = await db.query(`SELECT ROUND(AVG(score), 2) AS avg_score FROM lists WHERE game_id = $1`, [id]);
+        return data.rows;
+    },
 
 }
 

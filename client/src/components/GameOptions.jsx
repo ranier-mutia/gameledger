@@ -65,7 +65,7 @@ const GameOptions = (props) => {
     const onStatusSelectHandler = async (e) => {
 
         const id = listData.id ? listData.id : "";
-
+        console.log({ id: id, gameID: props.id, status: e.target.id });
         await axios.post('http://localhost:3000/lists/setStatus', { id: id, gameID: props.id, email: user.email, status: e.target.id })
             .then((response) => {
                 setListData(response.data);
@@ -108,7 +108,7 @@ const GameOptions = (props) => {
     const onReviewClickHandler = () => {
         if (!isLoggedIn()) return
 
-        reviewData ? navigate("/review/edit/" + reviewData.id) : navigate("/review/new/" + props.id);
+        reviewData ? navigate("/review/edit/" + reviewData.id, { state: { id: reviewData.id, type: "edit" } }) : navigate("/review/new/" + props.slug, { state: { id: props.id, type: "new" } });
 
     }
 
@@ -191,6 +191,13 @@ const GameOptions = (props) => {
         };
 
     }, [isShown]);
+
+    useEffect(() => {
+        if (isListShown) {
+            document.body.style.overflow = 'hidden'
+        }
+        !isListShown ? document.body.style.overflow = 'unset' : null;
+    }, [isListShown]);
 
     if (props.type == "card") {
         return (
@@ -281,7 +288,7 @@ const GameOptions = (props) => {
                     </button>
                 }
                 {!isShown &&
-                    <button type='button' className={`absolute top-0 right-0 bg-black group-hover:flex h-full w-8 rounded-e-lg border border-black shadow-xl hidden flex-col space-y-1 justify-center items-center group/option ${isShown && 'hidden'}`} onClick={onClickHandler}>
+                    <button type='button' className={`absolute flex top-0 right-0 bg-black h-full w-8 rounded-e-lg border border-black shadow-xl flex-col space-y-1 justify-center items-center group/option ${isShown && 'hidden'}`} onClick={onClickHandler}>
                         <div className='h-1 w-1 rounded-full bg-gray-400 group-hover/option:bg-gray-300'></div>
                         <div className='h-1 w-1 rounded-full bg-gray-400 group-hover/option:bg-gray-300'></div>
                         <div className='h-1 w-1 rounded-full bg-gray-400 group-hover/option:bg-gray-300'></div>

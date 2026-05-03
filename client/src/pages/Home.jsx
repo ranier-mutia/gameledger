@@ -12,11 +12,13 @@ const Home = () => {
     const [games, setGames] = useState();
     const controllerRef = useRef();
 
-    const getGames = async (ids = [6, 167, 169, 48, 49, 130, 34, 39], signal) => {
-
+    const getGames = async (ids, signal) => {
+        
+        if (!ids.length) ids = [6, 167, 169, 48, 49, 130, 34, 39];
+      
         const platformIDs = JSON.stringify(ids);
         setIsLoading(true);
-
+        
         await axios.post('http://localhost:3000/games/homeAllGames', { platformIDs }, { signal })
             .then((response) => {
                 setGames(response.data);
@@ -63,7 +65,6 @@ const Home = () => {
         }
 
         getPlatforms();
-
 
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;

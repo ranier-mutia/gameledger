@@ -4,7 +4,6 @@ const reviewService = {
     getReviews: async (offset) => {
         const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email ORDER BY reviews.date_added DESC LIMIT 17 OFFSET ${offset}`);
         return data.rows;
-
     },
     getReview: async (id) => {
         const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.review, reviews.like, reviews.dislike, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.id = $1`, [id]);
@@ -44,6 +43,14 @@ const reviewService = {
     },
     getAllGameReviews: async (id, offset) => {
         const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 ORDER BY reviews.date_added DESC LIMIT 25 OFFSET ${offset}`, [id]);
+        return data.rows;
+    },
+    getUserReviews: async (email) => {
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 ORDER BY reviews.date_added DESC LIMIT 4`, [email]);
+        return data.rows;
+    },
+    getAllUserReviews: async (email, offset) => {
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 ORDER BY reviews.date_added DESC LIMIT 17 OFFSET $2`, [email, offset]);
         return data.rows;
     }
 

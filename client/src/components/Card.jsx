@@ -106,7 +106,7 @@ const Card = (props) => {
 
     } else {
         return (
-            <div className='relative bg-gray-800 hover:bg-gray-900 shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full xl:w-full group' ref={cardRef}>
+            <div className='relative bg-gray-800 hover:bg-black shadow-2xl border-slate-900 rounded-xl cursor-pointer w-full xl:w-full group' ref={cardRef}>
 
                 <input type="hidden" id="gameID" name='gameID' value={props.id} />
 
@@ -143,7 +143,7 @@ const Card = (props) => {
                         {gameInfo ?
                             <div className='flex-col w-full text-white'>
 
-                                <h1 className='flex mx-5 my-3 font-medium text-sm'>{gameInfo.name} <span className='font-normal text-slate-300 ms-1'> {'(' + gameInfo.release_date + ')'}</span></h1>
+                                <h1 className='flex mx-5 my-3 font-medium text-sm'>{gameInfo.name} {gameInfo.release_date ? <span className='font-normal text-slate-300 ms-1'> {'(' + gameInfo.release_date + ')'}</span> : ""}</h1>
 
                                 <div className='flex justify-center mx-5 bg-gray-700' >
                                     {gameInfo.screenshot ? <img className="object-fill h-40 w-full" src={gameInfo.screenshot} alt={gameInfo.name} /> : gameInfo.artwork ? <img className="object-fill h-40 w-full" src={gameInfo.artwork} alt={gameInfo.name} /> : <div className='content-center h-40 text-white'>No Image</div>}

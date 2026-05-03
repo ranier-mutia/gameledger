@@ -8,7 +8,7 @@ const GameInfo = (props) => {
                 <div>Ratings:</div>
                 <div className='gameInfoItem'>
                     <span>IGDB: {props.game.rating ? <span className='text-slate-400'>{props.game.rating.toFixed(2) + ' / 100'} </span> : <span className='text-slate-400'>N/A</span>} </span>
-                    <span>Users: {props.userRating ? <span className='text-slate-400'>{props.userRating.toFixed(2) + ' / 10'} </span> : <span className='text-slate-400'>N/A</span>} </span>
+                    <span>Users: {props.score ? <span className='text-slate-400'>{props.score + ' / 100'} </span> : <span className='text-slate-400'>N/A</span>} </span>
                 </div>
             </div>
 

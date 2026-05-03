@@ -19,6 +19,7 @@ const Game = () => {
     const [game, setGame] = useState();
     const [favoriteData, setFavoriteData] = useState("");
     const [listData, setListData] = useState("");
+    const [gameScore, setGameScore] = useState("");
     const [reviewData, setReviewData] = useState("");
     const [isShown, setIsShown] = useState(false);
     const [isListShown, setIsListShown] = useState(false);
@@ -84,7 +85,7 @@ const Game = () => {
     const onReviewClickHandler = () => {
         if (!isLoggedIn()) return
 
-        reviewData ? navigate("/review/edit/" + reviewData.id) : navigate("/review/new/" + game.id);
+        reviewData ? navigate("/review/edit/" + reviewData.id, { state: { id: reviewData.id, type: "edit" } }) : navigate("/review/new/" + slug, { state: { id: game.id, type: "new" } });
 
     }
 
@@ -171,6 +172,20 @@ const Game = () => {
 
     }
 
+    const getGameScore = async (signal) => {
+
+        await axios.post('http://localhost:3000/lists/getGameScore', { id: game.id }, { signal })
+            .then((response) => {
+                setGameScore(response.data);
+            })
+            .catch((error) => {
+                if (error.code != "ERR_CANCELED") {
+                    console.log(error);
+                }
+            });
+
+    }
+
     useEffect(() => {
         if (!game) return
 
@@ -201,6 +216,7 @@ const Game = () => {
         getFavoriteData(signal);
         getListData(signal);
         getReviewData(signal);
+        getGameScore(signal);
 
         return () => controllerRef.current.abort();
 
@@ -255,8 +271,8 @@ const Game = () => {
             {/* Background Image */}
             {game &&
                 <div className='flex absolute w-full xl:ps-[17rem]'>
-                    <div className='flex h-auto min-h-80 w-full mx-auto bg-gray-600'>
-                        {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-80 w-full" /> : game.screenshot ? <img src={game.screenshot} alt={game.name} className="h-auto min-h-80 w-full" /> : <div className='content-center  mx-auto text-white pt-12'>No Cover</div>}
+                    <div className='flex h-auto max-h-[600px] min-h-80 w-full mx-auto bg-gray-900'>
+                        {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-80 w-full" /> : game.screenshot && <img src={game.screenshot} alt={game.name} className="h-auto min-h-80 w-full" />}
                     </div>
                     <div className='absolute bg-gray-700 h-full w-full top-60 sm:top-80 left-0'>
                         <div className='bg-gray-800 h-60 sm:h-40'></div>
@@ -273,7 +289,7 @@ const Game = () => {
                         <div className='flex justify-center w-full pt-16'>
 
                             <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
-                                <div className="flex justify-center align-middle h-64 w-60 bg-gray-600 rounded-xl border border-gray-800 shadow-xl -mt-2">
+                                <div className="flex justify-center align-middle h-64 w-60 bg-gray-600 rounded-xl sm:border sm:border-gray-800 shadow-xl -mt-2">
                                     {(game.cover ? <img className="object-fill h-full w-full rounded-xl " src={game.cover.urlBig} alt={game.name} />
                                         : <div className='content-center text-white'>No Cover</div>)}
 
@@ -353,7 +369,7 @@ const Game = () => {
                             <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
 
                                 <div className='hidden sm:block'>
-                                    <GameInfo game={game} />
+                                    <GameInfo game={game} score={gameScore} />
                                 </div>
 
                                 <div className='w-full'>
@@ -372,7 +388,7 @@ const Game = () => {
 
                                     <Status id={game.id} />
 
-                                    {<ReviewStack id={game.id} reviewData={reviewData} user={user} onReviewClickHandler={onReviewClickHandler} />}
+                                    {<ReviewStack id={game.id} slug={game.slug} reviewData={reviewData} user={user} onReviewClickHandler={onReviewClickHandler} />}
 
                                     {game.similar_games && <SimilarGames games={game.similar_games} />}
 

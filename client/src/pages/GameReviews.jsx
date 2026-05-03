@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ReviewCard from '../components/ReviewCard';
 
 const GameReviews = (props) => {
@@ -12,8 +12,13 @@ const GameReviews = (props) => {
 
     const controllerRef = useRef();
 
-    const params = useParams();
-    const id = params.id;
+    const navigate = useNavigate();
+
+    const { state } = useLocation();
+    let id = "";
+    if (state) {
+        ({ id } = state);
+    }
 
     const loadingCard = (count) => {
 
@@ -27,7 +32,7 @@ const GameReviews = (props) => {
 
     }
 
-    const getReviews = async (signal) => {
+    const getReviews = async (id, signal) => {
 
         if (hasNext) {
 
@@ -59,6 +64,8 @@ const GameReviews = (props) => {
 
     useEffect(() => {
 
+        if (!id) return navigate("/");
+
         if (controllerRef.current) {
             controllerRef.current.abort();
         }
@@ -66,11 +73,11 @@ const GameReviews = (props) => {
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
 
-        getReviews(signal);
+        getReviews(id, signal);
 
         return () => controllerRef.current.abort();
 
-    }, [id]);
+    }, []);
 
     useEffect(() => {
 

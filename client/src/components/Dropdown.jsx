@@ -73,8 +73,7 @@ const Dropdown = (props) => {
         if (checkBox && isOpen) {
 
             const ids = checkBox.filter((item) => item.isChecked == true).map(i => { return i.id });
-            props.dropDownHandler(JSON.stringify(ids), signal);
-
+            props.dropDownHandler(ids, signal);
         }
 
         return () => controllerRef.current.abort();

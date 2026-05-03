@@ -12,5 +12,14 @@ router.route("/setFavorite")
 router.route("/setReviewPreference")
     .post(controller.setReviewPreference);
 
+router.route("/getFavoriteGames")
+    .post(controller.getFavoriteGames);
+
+router.route("/getAllFavoriteGames")
+    .post(controller.getAllFavoriteGames);
+
+router.route("/setActivityPreference")
+    .post(controller.setActivityPreference);
+
 
 export default router;

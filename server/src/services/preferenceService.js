@@ -33,6 +33,26 @@ const preferenceService = {
         const data = await db.query(`DELETE FROM preferences WHERE id = $1`, [id]);
         return data.rows;
     },
+    getFavoriteGames: async (email) => {
+        const data = await db.query(`SELECT target_id FROM preferences WHERE type = 'favorite' AND email = $1 ORDER BY date_added DESC LIMIT 6`, [email]);
+        return data.rows;
+    },
+    getAllFavoriteGames: async (email, offset) => {
+        const data = await db.query(`SELECT target_id FROM preferences WHERE type = 'favorite' AND email = $1 ORDER BY date_added DESC LIMIT 25 OFFSET $2`, [email, offset]);
+        return data.rows;
+    },
+    getActivityPreferences: async (ids, email) => {
+        const data = await db.query(`SELECT id, target_id FROM preferences WHERE type = 'activity' AND email = $2 AND target_id = any($1)`, [ids, email]);
+        return data.rows;
+    },
+    addActivityPreference: async (actID, email) => {
+        const data = await db.query(`INSERT INTO preferences (target_id, email, liked, date_added, type) VALUES ($1, $2, true, to_timestamp(${Date.now()} / 1000.0), 'activity') RETURNING id, liked`, [actID, email]);
+        return data.rows;
+    },
+    removeActivityPreference: async (id) => {
+        const data = await db.query(`DELETE FROM preferences WHERE id = $1`, [id]);
+        return data.rows;
+    },
 }
 
 export default preferenceService;

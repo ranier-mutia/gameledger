@@ -7,6 +7,8 @@ import Login from './pages/layouts/Login.jsx'
 import Header from "./pages/layouts/Header.jsx"
 import Sidebar from "./pages/layouts/Sidebar.jsx"
 import Home from "./pages/Home.jsx"
+import User from './pages/User.jsx'
+import Settings from './pages/Settings.jsx'
 import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
 import Events from './pages/Events.jsx'
@@ -15,7 +17,6 @@ import Reviews from './pages/Reviews.jsx'
 import GameReviews from './pages/GameReviews.jsx'
 import Review from './pages/Review.jsx'
 import ReviewEditor from './pages/ReviewEditor.jsx'
-
 
 const App = () => {
 
@@ -43,7 +44,7 @@ const App = () => {
         const authUser = response.data;
 
         if (authUser) {
-          setUser({ username: authUser.username, email: authUser.email, loggedIn: true });
+          setUser({ id: authUser.id, username: authUser.username, email: authUser.email, profile_picture: authUser.profile_picture, loggedIn: true });
         } else {
           setUser({ loggedIn: false });
         }
@@ -91,6 +92,9 @@ const App = () => {
             <Routes>
               <Route path='/' element={<Home />} />
 
+              <Route path='/user/:username' element={<User />} />
+              <Route path='/settings' element={<Settings />} />
+
               <Route path='/games' element={<Games key="games" type='GAMES' />} />
               <Route path='/games/hyped' element={<Games key="hyped" type='HYPED' />} />
               <Route path='/games/new' element={<Games key="new" type='NEW' />} />
@@ -102,10 +106,10 @@ const App = () => {
               <Route path='/event/:slug' element={<Event />} />
 
               <Route path='/reviews' element={<Reviews />} />
-              <Route path='/reviews/:id' element={<GameReviews />} />
+              <Route path='/reviews/:slug' element={<GameReviews />} />
               <Route path='/review/:id' element={<Review />} />
-              <Route path='/review/new/:id' element={<ReviewEditor key="new" type="new" />} />
-              <Route path='/review/edit/:id' element={<ReviewEditor key="edit" type="edit" />} />
+              <Route path='/review/new/:slug' element={<ReviewEditor key="new" />} />
+              <Route path='/review/edit/:id' element={<ReviewEditor key="edit" />} />
 
               <Route path='*' element={<Navigate to='/' />} />
             </Routes>
