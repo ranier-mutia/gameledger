@@ -23,11 +23,13 @@ const Game = () => {
     const [reviewData, setReviewData] = useState("");
     const [isShown, setIsShown] = useState(false);
     const [isListShown, setIsListShown] = useState(false);
+    const [isPageLoading, setIsPageLoading] = useState(false);
     const [isLoading, setIsLoading] = useState({
         setFavorite: false,
         getList: false,
         getReview: false
     });
+
 
     const controllerRef = useRef();
     const menuRef = useRef();
@@ -234,11 +236,13 @@ const Game = () => {
 
     useEffect(() => {
 
+        setIsPageLoading(true);
         const getGame = async (signal) => {
 
             await axios.post('http://localhost:3000/games/getGame', { slug }, { signal })
                 .then((response) => {
                     setGame(response.data);
+                    setIsPageLoading(false);
 
                 })
                 .catch((error) => {
@@ -262,152 +266,269 @@ const Game = () => {
 
     }, [slug]);
 
+    if (!isPageLoading) {
+   
+        return (
+
+            <div className='h-full w-full relative'>
+                {/* Background Image */}
+                {game &&
+                    <div className='flex absolute w-full xl:ps-[17rem]'>
+                        <div className='flex h-auto max-h-[600px] min-h-80 w-full mx-auto bg-gray-900'>
+                            {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-80 w-full" /> : game.screenshot && <img src={game.screenshot} alt={game.name} className="h-auto min-h-80 w-full" />}
+                        </div>
+                        <div className='absolute bg-gray-700 h-full w-full top-60 sm:top-80 left-0'>
+                            <div className='bg-gray-800 h-60 sm:h-40'></div>
+                            <div></div>
+                        </div>
+                    </div>
+                }
+
+                <div className='flex justify-center h-full w-full pb-20 pt-5 sm:pt-20 xl:ps-[17rem] overflow-x-hidden'>
+                    {game &&
+                        <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-20 xl:px-20 xl:py-2 z-20'>
+
+                            {/* Cover, Title, and Summary */}
+                            <div className='flex justify-center w-full pt-16'>
+
+                                <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
+                                    <div className="flex justify-center align-middle h-64 w-60 bg-gray-600 rounded-xl sm:border sm:border-gray-800 shadow-xl -mt-2">
+                                        {(game.cover ? <img className="object-fill h-full w-full rounded-xl " src={game.cover.urlBig} alt={game.name} />
+                                            : <div className='content-center text-white'>No Cover</div>)}
 
 
-    return (
+                                    </div>
+
+                                    <div className='w-60 sm:w-full sm:h-full flex justify-center items-center space-x-2 pt-2 sm:pt-0'>
+                                        <div className="relative inline-flex rounded-lg shadow-sm w-full text-gray-300 select-none" role="group">
+                                            <button type='button' className="z-10 w-full h-10 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-800 py-1 px-3 font-medium rounded-s-lg" onClick={onListClickHandler}>
+                                                {user.loggedIn && listData ? "Update List" : "Add to List"}
+                                            </button>
+                                            {!isShown &&
+                                                <button type='button' className="z-10 w-10 h-10 bg-blue-500 hover:bg-blue-700 focus:outline-none py-1 px-3 font-medium rounded-e-lg text-white justify-items-center" onClick={onDownClickHandler}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+                                                        <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            }
+                                            {isShown &&
+                                                <button type='button' className="z-10 w-10 h-10 bg-blue-500 hover:bg-blue-700 focus:outline-none py-1 px-3 font-medium rounded-e-lg text-white justify-items-center" onClick={onUpClickHandler}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 scale-y-[-1]">
+                                                        <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            }
+
+                                            <Transition show={isShown}
+                                                enter='transition-all origin-top duration-250 '
+                                                enterFrom='scale-y-0'
+                                                enterTo="scale-y-full"
+                                                leave="transition-all origin-top duration-250 "
+                                                leaveFrom="scale-y-full "
+                                                leaveTo="scale-y-0"
+                                            >
+
+                                                <div className='top-8 absolute w-full bg-gray-900 rounded-b-lg pt-2 shadow-xl divide-y divide-gray-400' ref={menuRef}>
+
+                                                    <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none w-full h-auto p-1' onClick={onStatusSelectHandler}>
+                                                        <li id='plan' className={`hover:bg-gray-800 p-2  ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
+                                                        <li id='playing' className={`hover:bg-gray-800 p-2 ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
+                                                        <li id='played' className={`hover:bg-gray-800 p-2  ${listData.status == "played" && 'text-blue-400'}`}>Played</li>
+
+                                                    </ul>
+                                                    <ul className='text-gray-300 text-center select-none w-full h-auto p-1'>
+                                                        <li className={`hover:bg-gray-800 p-2 divide-y-2 divide-white ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
+                                                    </ul>
+
+                                                </div>
+
+                                            </Transition>
+
+                                        </div>
+
+                                        <button type='button' className="h-10 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700 py-1 px-3 font-medium rounded-lg" onClick={onHeartClickHandler} disabled={isLoading.setFavorite}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill={favoriteData ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`w-6 h-6 text-white ${isLoading.setFavorite && 'animate-pulse'}`}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div className='text-center text-blue-400 font-medium text-xl my-2 mx-10 hover:overflow-y-auto h-14 sm:hidden'>{game.name}</div>
+                                </div>
+
+                                <div className='text-slate-400 mt-44 hidden sm:block w-full'>
+                                    <div className='font-medium text-blue-400 text-xl my-1'>{game.name}</div>
+                                    <div className='overflow-hidden hover:overflow-y-auto h-24'>
+                                        <p >{game.summary}</p>
+                                    </div>
+                                </div>
+
+                            </div>
 
 
-        <div className='h-full w-full relative'>
+                            {/* Body */}
+                            <div className='mt-6'>
+
+                                <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
+
+                                    <div className='hidden sm:block'>
+                                        <GameInfo game={game} score={gameScore} />
+                                    </div>
+
+                                    <div className='w-full'>
+
+                                        {game.videos && <VideoPlaylist videos={game.videos} />}
+
+                                        {game.summary && <div className='text-slate-400 mb-4 sm:hidden'>{game.summary}</div>}
+
+                                        {game.storyline && <StoryLine storyline={game.storyline} />}
+
+                                        <div className='sm:hidden'>
+                                            <GameInfo game={game} />
+                                        </div>
+
+                                        {game.artworks || game.screenshots ? <Gallery artworks={game.artworks} screenshots={game.screenshots} /> : null}
+
+                                        <Status id={game.id} />
+
+                                        {<ReviewStack id={game.id} slug={game.slug} reviewData={reviewData} user={user} onReviewClickHandler={onReviewClickHandler} />}
+
+                                        {game.similar_games && <SimilarGames games={game.similar_games} />}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                </div>
+
+                {isListShown &&
+                    <ListMenu isShown={isListShown} slug={game.slug} listData={listData} favoriteData={favoriteData} onListCloseHandler={onListCloseHandler} updateData={updateDataHandler} />
+                }
+
+            </div>
+        )
+    } else {
+
+        return(
+            <div className='h-full w-full relative'>
             {/* Background Image */}
-            {game &&
+           
                 <div className='flex absolute w-full xl:ps-[17rem]'>
                     <div className='flex h-auto max-h-[600px] min-h-80 w-full mx-auto bg-gray-900'>
-                        {game.artwork ? <img src={game.artwork} alt={game.name} className="h-auto min-h-80 w-full" /> : game.screenshot && <img src={game.screenshot} alt={game.name} className="h-auto min-h-80 w-full" />}
+
                     </div>
                     <div className='absolute bg-gray-700 h-full w-full top-60 sm:top-80 left-0'>
                         <div className='bg-gray-800 h-60 sm:h-40'></div>
                         <div></div>
                     </div>
                 </div>
-            }
-
-            <div className='flex justify-center h-full w-full pb-20 pt-5 sm:pt-20 xl:ps-[17rem] overflow-x-hidden'>
-                {game &&
-                    <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-20 xl:px-20 xl:py-2 z-20'>
-
-                        {/* Cover, Title, and Summary */}
-                        <div className='flex justify-center w-full pt-16'>
-
-                            <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
-                                <div className="flex justify-center align-middle h-64 w-60 bg-gray-600 rounded-xl sm:border sm:border-gray-800 shadow-xl -mt-2">
-                                    {(game.cover ? <img className="object-fill h-full w-full rounded-xl " src={game.cover.urlBig} alt={game.name} />
-                                        : <div className='content-center text-white'>No Cover</div>)}
 
 
-                                </div>
+                <div className='flex justify-center h-full w-full pb-20 pt-5 sm:pt-20 xl:ps-[17rem] overflow-x-hidden'>
+                    {game &&
+                        <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-20 xl:px-20 xl:py-2 z-20'>
 
-                                <div className='w-60 sm:w-full sm:h-full flex justify-center items-center space-x-2 pt-2 sm:pt-0'>
-                                    <div className="relative inline-flex rounded-lg shadow-sm w-full text-gray-300 select-none" role="group">
-                                        <button type='button' className="z-10 w-full h-10 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-800 py-1 px-3 font-medium rounded-s-lg" onClick={onListClickHandler}>
-                                            {user.loggedIn && listData ? "Update List" : "Add to List"}
-                                        </button>
-                                        {!isShown &&
-                                            <button type='button' className="z-10 w-10 h-10 bg-blue-500 hover:bg-blue-700 focus:outline-none py-1 px-3 font-medium rounded-e-lg text-white justify-items-center" onClick={onDownClickHandler}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
-                                                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        }
-                                        {isShown &&
-                                            <button type='button' className="z-10 w-10 h-10 bg-blue-500 hover:bg-blue-700 focus:outline-none py-1 px-3 font-medium rounded-e-lg text-white justify-items-center" onClick={onUpClickHandler}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 scale-y-[-1]">
-                                                    <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clipRule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        }
+                            {/* Cover, Title, and Summary */}
+                            <div className='flex justify-center w-full pt-16'>
 
-                                        <Transition show={isShown}
-                                            enter='transition-all origin-top duration-250 '
-                                            enterFrom='scale-y-0'
-                                            enterTo="scale-y-full"
-                                            leave="transition-all origin-top duration-250 "
-                                            leaveFrom="scale-y-full "
-                                            leaveTo="scale-y-0"
-                                        >
-
-                                            <div className='top-8 absolute w-full bg-gray-900 rounded-b-lg pt-2 shadow-xl divide-y divide-gray-400' ref={menuRef}>
-
-                                                <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none w-full h-auto p-1' onClick={onStatusSelectHandler}>
-                                                    <li id='plan' className={`hover:bg-gray-800 p-2  ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
-                                                    <li id='playing' className={`hover:bg-gray-800 p-2 ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
-                                                    <li id='played' className={`hover:bg-gray-800 p-2  ${listData.status == "played" && 'text-blue-400'}`}>Played</li>
-
-                                                </ul>
-                                                <ul className='text-gray-300 text-center select-none w-full h-auto p-1'>
-                                                    <li className={`hover:bg-gray-800 p-2 divide-y-2 divide-white ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
-                                                </ul>
-
-                                            </div>
-
-                                        </Transition>
-
+                                <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
+                                    <div className="flex justify-center align-middle h-64 w-60 bg-gray-700 rounded-xl sm:border sm:border-gray-800 shadow-xl -mt-2">
+                                       <div className='content-center text-white h-64 '></div>
                                     </div>
 
-                                    <button type='button' className="h-10 bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700 py-1 px-3 font-medium rounded-lg" onClick={onHeartClickHandler} disabled={isLoading.setFavorite}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill={favoriteData ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`w-6 h-6 text-white ${isLoading.setFavorite && 'animate-pulse'}`}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <div className='text-center text-blue-400 font-medium text-xl my-2 mx-10 hover:overflow-y-auto h-14 sm:hidden'>{game.name}</div>
-                            </div>
-
-                            <div className='text-slate-400 mt-44 hidden sm:block w-full'>
-                                <div className='font-medium text-blue-400 text-xl my-1'>{game.name}</div>
-                                <div className='overflow-hidden hover:overflow-y-auto h-24'>
-                                    <p >{game.summary}</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                        {/* Body */}
-                        <div className='mt-6'>
-
-                            <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
-
-                                <div className='hidden sm:block'>
-                                    <GameInfo game={game} score={gameScore} />
-                                </div>
-
-                                <div className='w-full'>
-
-                                    {game.videos && <VideoPlaylist videos={game.videos} />}
-
-                                    {game.summary && <div className='text-slate-400 mb-4 sm:hidden'>{game.summary}</div>}
-
-                                    {game.storyline && <StoryLine storyline={game.storyline} />}
-
-                                    <div className='sm:hidden'>
-                                        <GameInfo game={game} />
+                                    <div className='w-60 sm:w-full sm:h-full flex justify-center items-center space-x-2 pt-2 sm:pt-0 animate-pulse'>
+                                        <div className="h-8 bg-slate-700 rounded basis-3/4"></div>
+                                        <div className="h-8 bg-slate-700 rounded basis-1/4"></div>
                                     </div>
 
-                                    {game.artworks || game.screenshots ? <Gallery artworks={game.artworks} screenshots={game.screenshots} /> : null}
+                                    <div className='text-center text-blue-400 font-medium text-xl my-2 mx-10 hover:overflow-y-auto h-14 sm:hidden'>
+                                        <div className='flex space-x-3 w-60 mt-2 animate-pulse'>
+                                            <div className="h-3 bg-slate-700 rounded basis-2/5"></div>
+                                            <div className="h-3 bg-slate-700 rounded basis-3/5"></div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                    <Status id={game.id} />
+                                <div className='mt-44 hidden sm:block w-full animate-pulse'>
+                                    <div className='flex space-x-3 w-60 mt-4'>
+                                        <div className="h-3 bg-slate-700 rounded basis-3/4"></div>
+                                        <div className="h-3 bg-slate-700 rounded basis-1/4"></div>
+                                    </div>
+                                    <div className='overflow-hidden hover:overflow-y-auto h-24'>
+                                        <div className='flex space-x-3 w-full mt-4'>
+                                            <div className="h-2 bg-slate-700 rounded basis-3/6"></div>
+                                            <div className="h-2 bg-slate-700 rounded basis-1/6"></div>
+                                            <div className="h-2 bg-slate-700 rounded basis-2/6"></div>
+                                        </div>
+                                        <div className='flex space-x-3 w-96 mt-2'>
+                                            <div className="h-2 bg-slate-700 rounded basis-1/4"></div>
+                                            <div className="h-2 bg-slate-700 rounded basis-1/4"></div>
+                                            <div className="h-2 bg-slate-700 rounded basis-2/4"></div>
+                                        </div>
+                                    </div>
 
-                                    {<ReviewStack id={game.id} slug={game.slug} reviewData={reviewData} user={user} onReviewClickHandler={onReviewClickHandler} />}
+                                </div>
 
-                                    {game.similar_games && <SimilarGames games={game.similar_games} />}
+                            </div>
+
+
+                            {/* Body */}
+                            <div className='mt-6'>
+
+                                <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
+
+                                    <div className='hidden sm:block'>
+                                        <GameInfo game={game} score={gameScore} isLoading={isPageLoading}/>
+                                    </div>
+
+                                    <div className='w-full'>
+
+                                        {game.videos && <VideoPlaylist videos={game.videos} isLoading={isPageLoading}/>}
+
+                                     <div className='text-slate-400 mb-4 sm:hidden animate-pulse'>
+                                     <div className='flex space-x-3 w-full mt-2'>
+                                            <div className="h-2 bg-slate-600 rounded basis-3/6"></div>
+                                            <div className="h-2 bg-slate-600 rounded basis-1/6"></div>
+                                            <div className="h-2 bg-slate-600 rounded basis-2/6"></div>
+                                        </div>
+                                        <div className='flex space-x-3 w-96 mt-2'>
+                                            <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
+                                            <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
+                                            <div className="h-2 bg-slate-600 rounded basis-2/4"></div>
+                                        </div>
+                                     </div>
+
+                                        <div className='sm:hidden'>
+                                            <GameInfo game={game} isLoading={isPageLoading}/>
+                                        </div>
+
+
+
+                                    </div>
 
                                 </div>
 
                             </div>
 
                         </div>
+                    }
+                </div>
 
-                    </div>
-                }
+
+
+
+
+
+
+            
             </div>
-
-            {isListShown &&
-                <ListMenu isShown={isListShown} slug={game.slug} listData={listData} favoriteData={favoriteData} onListCloseHandler={onListCloseHandler} updateData={updateDataHandler} />
-            }
-
-        </div>
-    )
+        )
+      
+    }
 }
 
 export default Game

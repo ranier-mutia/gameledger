@@ -1,6 +1,11 @@
 import React from 'react'
 
 const Search = (props) => {
+
+    const [query, setQuery] = useState("");
+
+
+
     return (
         <form className='xl:flex justify-center basis-10/12 hidden xl:visible'>
             <div className="relative basis-4/12">

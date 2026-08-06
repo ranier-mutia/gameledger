@@ -12,7 +12,7 @@ const Home = () => {
     const [games, setGames] = useState();
     const controllerRef = useRef();
 
-    const getGames = async (ids, signal) => {
+    const getGames = async (ids = [], signal) => {
         
         if (!ids.length) ids = [6, 167, 169, 48, 49, 130, 34, 39];
       
