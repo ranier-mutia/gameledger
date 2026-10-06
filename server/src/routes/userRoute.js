@@ -42,4 +42,10 @@ router.route("/resetPassword")
 router.route("/getUser")
     .post(controller.getUser);
 
+router.route("/searchUsers")
+    .post(controller.searchUsers);
+
+router.route("/searchAllUsers")
+    .post(controller.searchAllUsers);
+
 export default router;

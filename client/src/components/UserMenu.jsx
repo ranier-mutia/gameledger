@@ -12,6 +12,8 @@ const UserMenu = (props) => {
 
     const navigate = useNavigate();
 
+    const serverURL = import.meta.env.VITE_REACT_APP_SERVER_BASEURL;
+
     function onCLickHandler(e) {
 
         if (isOpen) {
@@ -60,7 +62,11 @@ const UserMenu = (props) => {
         <div className="h-8 w-8">
             <button data-dropdown-toggle="userMenuButton" type="button" className='w-full h-full rounded-full hover:opacity-75 focus:opacity-75 select-none' onClick={onCLickHandler} ref={buttonRef}>
 
-                <img className="rounded-full" src={`/profile_pictures/${user.profile_picture}.png`} alt="profile_picture" draggable="false" />
+                <img className="rounded-full" src={`${serverURL}uploads/profile_pictures/${user.profile_picture}`} alt="profile_picture" draggable="false" onError={(e) => {
+                    e.currentTarget.onerror = null; // Prevents infinite loops if default image is also missing
+                    e.currentTarget.src = '/profile_pictures/default.png';
+                }}
+                />
 
             </button>
 

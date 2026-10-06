@@ -22,6 +22,8 @@ const Socials = (props) => {
 
     const navigate = useNavigate()
 
+    const serverURL = import.meta.env.VITE_REACT_APP_SERVER_BASEURL;
+
     const onSocialClickHandler = (username, userID) => {
 
         setSocials([])
@@ -213,7 +215,7 @@ const Socials = (props) => {
             <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4 mt-6 rounded-xl`}>
                 {socials && socials.map((item, i) => {
                     return (
-                        < SocialCard key={item.id} social={item} onSocialClickHandler={onSocialClickHandler} />
+                        < SocialCard key={item.id} social={item} img={`${serverURL}uploads/profile_pictures/${item.profile_picture}`} onSocialClickHandler={onSocialClickHandler} />
                     )
                 })}
                 {isLoading.init && loadingCard(20)}

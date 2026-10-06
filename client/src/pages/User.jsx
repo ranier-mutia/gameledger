@@ -33,7 +33,7 @@ const User = (props) => {
 
     const navigate = useNavigate();
 
-
+    const serverURL = import.meta.env.VITE_REACT_APP_SERVER_BASEURL;
 
 
 
@@ -205,7 +205,11 @@ const User = (props) => {
                         <div className='absolute top-36 left-6 sm:top-40 lg:left-20 flex justify-center'>
 
                             <div className="relative flex justify-center align-middle h-24 w-24 sm:h-40 sm:w-40 bg-gray-600 rounded-full border border-gray-800 shadow-xl">
-                                <img className="rounded-full h-full w-full z-20" src={`/profile_pictures/${user.profile_picture}.png`} alt="profile_picture" draggable="false" />
+                                <img className="rounded-full h-full w-full z-20" src={`${serverURL}uploads/profile_pictures/${user.profile_picture}`} alt="profile_picture" draggable="false" onError={(e) => {
+                                    e.currentTarget.onerror = null; // Prevents infinite loops if default image is also missing
+                                    e.currentTarget.src = '/profile_pictures/default.png';
+                                }}
+                                />
                                 <div className='text-white text-sm sm:text-base z-10 bg-gray-900 absolute py-2 px-3 rounded-xl shadow-xl bottom-2 left-1/2 ps-14 sm:ps-20 border border-black'>{user.username}</div>
                             </div>
 

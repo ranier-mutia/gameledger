@@ -1,12 +1,15 @@
 import express from "express";
 import env from "dotenv";
+import path from 'path';
 import cors from "cors";
 import routes from "./routes/index.js";
 import session from "express-session";
 import passport from "passport"
 import passportConfig from "./config/passport.js";
+import { initIgdbCron } from './jobs/igdbSync.job.js';
 
 env.config();
+initIgdbCron();
 
 const app = express();
 
@@ -33,6 +36,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passportConfig();
+
+app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
 app.use(routes);
 

@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer"
+import path from "path";
+
+const logoPath = path.join(import.meta.dirname, '../assets/logo.png');
 
 const mailer = async (email, otp) => {
 
@@ -61,7 +64,7 @@ const mailer = async (email, otp) => {
                                     <table align="center" style="border-spacing: 0; text-align: center; padding: 20px 0px 15px 0px;">
                                         <tr>
                                             <td>
-                                                <img src="https://i.ibb.co/Vgmhr4V/logo.png" alt="logo" border="0" width="32" height="32">
+                                                <img src="cid:logo" alt="logo" border="0" width="32" height="32">
                                             </td>
                                             <td>
                                                 <h1 style="color:#3b82f6;font-size: 24px; margin: 0px 5px;">GameLedger</h1>
@@ -141,8 +144,14 @@ const mailer = async (email, otp) => {
                         </table>
                     </center>
                 </body>
-                <html>`
-
+                <html>`,
+                attachments: [
+                    {
+                      filename: 'logo.png',
+                      path: logoPath, // 100% safe across all operating systems
+                      cid: 'logo'
+                    }
+                  ]
         });
 
     } catch (err) {

@@ -1,13 +1,16 @@
 import gameService from "../services/gameService.js";
+import { z } from "zod";
+
+const searchInputSchema = z
+    .string()
+    .trim()
+    .transform((val) => val.replace(/\s+/g, " "))
+    .pipe(z.string().min(1).max(50));
 
 const gameController = {
     getHomeAllGames: async (req, res) => {
 
-        var platformIDs = JSON.parse(req.body.platformIDs);
-
-        platformIDs = platformIDs.toString().replace("[", "").replace("]", "");
-
-        const [hyped, newG, upcoming, best] = await gameService.homeAllGames(platformIDs);
+        const [hyped, newG, upcoming, best] = await gameService.homeAllGames();
 
         let games = {};
 
@@ -34,47 +37,6 @@ const gameController = {
             })
 
         })
-        res.status(200).send(games);
-
-    },
-    getHomePlatforms: async (req, res) => {
-
-        var platforms = await gameService.homePlatforms();
-        res.status(200).send(platforms);
-
-    },
-    getAllGames: async (req, res) => {
-
-        const offset = req.body.offset
-        const type = req.body.type
-
-        let games;
-        switch (type) {
-            case 'GAMES':
-                games = await gameService.allDefaultGames(offset);
-                break;
-            case 'HYPED':
-                games = await gameService.allHypedGames(offset);
-                break;
-            case 'NEW':
-                games = await gameService.allNewGames(offset);
-                break;
-            case 'UPCOMING':
-                games = await gameService.allUpcomingGames(offset);
-                break;
-            case 'BEST':
-                games = await gameService.allBestGames(offset);
-                break;
-        }
-
-        Object.values(games).forEach((item) => {
-
-            if (item.cover) {
-                item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
-            }
-
-        })
-
         res.status(200).send(games);
 
     },
@@ -157,6 +119,98 @@ const gameController = {
         })
 
         res.status(200).send(games);
+
+    },
+    searchGames: async (req, res) => {
+
+        const validation = searchInputSchema.safeParse(req.body.query);
+
+        // If client bypassed frontend validation or sent bad types, return 400 Bad Request
+        if (!validation.success) {
+            return res.status(400).json({
+                error: "Invalid request parameters"
+            });
+        }
+
+        // Escape Postgres ILIKE wildcards (% and _)
+        const sanitizedQuery = validation.data.replace(/[%_]/g, "\\$&");
+
+        const games = await gameService.searchGames(sanitizedQuery);
+
+        Object.values(games).forEach((item) => {
+
+            let date = new Date(item.first_release_date * 1000);
+            item.release_date = date.getFullYear();
+
+            if (item.cover) {
+                item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+            }
+
+        })
+
+        res.status(200).send(games);
+    },
+    getGames: async (req, res) => {
+       
+        try {
+            const {
+                search,
+                platforms,
+                genres,
+                gameModes,
+                themes,
+                perspective,
+                startYear,
+                endYear,
+                sort,
+                offset
+            } = req.body;
+            
+            let sanitizedQuery = "";
+            if (search) {
+                const validation = searchInputSchema.safeParse(search);
+                // If client bypassed frontend validation or sent bad types, return 400 Bad Request
+                if (!validation.success) {
+                    return res.status(400).json({
+                        error: "Invalid request parameters"
+                    });
+                }
+
+                // Escape Postgres ILIKE wildcards (% and _)
+                sanitizedQuery = validation.data.replace(/[%_]/g, "\\$&");
+            }
+
+            // Pass parsed query parameters directly to the service
+            const result = await gameService.getGames({
+                sanitizedQuery,
+                platforms,
+                genres,
+                gameModes,
+                themes,
+                perspective,
+                startYear,
+                endYear,
+                sort,
+                offset
+            });
+
+            Object.values(result).forEach((item) => {
+                if (item.cover) {
+                    item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+                }
+            })
+
+            return res.json(result);
+
+        } catch (error) {
+            console.error('[GameController Error]:', error.message);
+            return res.status(500).json({ error: 'Failed to retrieve games catalog.' });
+        }
+    },
+    getGameFilters: async (req, res) => {
+
+        const filters = await gameService.getGameFilters();
+        res.status(200).send(filters);
 
     }
 

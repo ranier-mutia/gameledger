@@ -1,7 +1,8 @@
 import axios from "axios";
 import env from "dotenv";
+import { getTwitchToken } from '../config/igdb.js';
 
-
+const token = await getTwitchToken();
 env.config();
 
 
@@ -12,7 +13,7 @@ let config = {
     url: '',
     headers: {
         'Client-ID': process.env.TWITCH_CLIENT_ID,
-        'Authorization': `Bearer ${process.env.TWITCH_TOKEN}`,
+        'Authorization': `Bearer ${token}`,
     },
     data: ''
 };
