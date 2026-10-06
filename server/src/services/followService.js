@@ -6,6 +6,11 @@ const followService = {
         return data.rows;
 
     },
+    getAllFollowData: async (id, userID) => {
+        const data = await db.query(`SELECT id, following_id FROM follows WHERE following_id = ANY($1) AND follower_id = $2`, [id, userID]);
+        return data.rows;
+
+    },
     getFollowerCount: async (id) => {
         const data = await db.query(`SELECT count(id) FROM follows WHERE following_id = $1`, [id]);
         return data.rows;

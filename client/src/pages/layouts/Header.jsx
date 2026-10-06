@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import Search from '../../components/Search.jsx'
 import Logo from '../../components/Logo.jsx'
 import { Link } from 'react-router-dom'
@@ -7,13 +7,18 @@ import UserMenu from '../../components/UserMenu.jsx'
 
 const Header = (props) => {
 
+    const [showSearch, setShowSearch] = useState(false)
     const user = useUserContext()
+
+    const toggleSearch = () => {
+        setShowSearch((prev) => !prev);
+    }
 
     return (
         <header className='fixed z-40 bg-gray-800 w-full shadow-xl'>
             <nav className="flex justify-between py-3 px-3 xl:px-6">
 
-                <div className="flex basis-1/12 md:pe-1 lg:pe-18 ">
+                <div className={`${showSearch ? 'hidden md:flex' : 'flex'} basis-1/12 md:pe-1 lg:pe-18 `}>
 
                     <button className='xl:hidden text-slate-300 rounded-lg hover:bg-slate-700 px-1 me-1' onClick={props.onMenuClickHandler}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8">
@@ -29,13 +34,13 @@ const Header = (props) => {
 
                 </div>
 
-                <Search />
+                <Search isShown={showSearch} toggleSearch={toggleSearch}/>
 
                 <div className='flex justify-end basis-1/12 space-x-2'>
-                    <button className='xl:hidden text-slate-300 rounded-lg hover:bg-slate-700 p-1 px-2'>
+                    <button className='md:hidden text-slate-300 rounded-lg hover:bg-slate-700 p-1 px-2' onClick={(e) => { toggleSearch() }}>
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" ><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
-                    <div className="flex justify-center items-center">
+                    <div className={`${showSearch ? 'hidden md:flex' : 'flex'} justify-center items-center`}>
                         {user.loggedIn ?
 
                             <UserMenu logout={props.logout} />

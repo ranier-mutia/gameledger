@@ -1,5 +1,6 @@
 import listService from "../services/listService.js";
 import gameService from "../services/gameService.js";
+import userService from "../services/userService.js";
 import activityService from "../services/activityService.js";
 
 const listController = {
@@ -16,6 +17,7 @@ const listController = {
         if (!id) {
             const [list] = await listService.addListData(gameID, email, status, score, dateStart, dateEnd);
             await activityService.addUserActivity(gameID, email, status, list.id);
+
         } else {
             await listService.updateListData(id, status, score, dateStart, dateEnd);
             const [activity] = await activityService.getUserActivity(id);
@@ -25,6 +27,52 @@ const listController = {
             }
 
         }
+
+        let topGenres = "";
+        let ids = "";
+
+        if (email) {
+            ids = await listService.getGameIDs(email);
+        }
+
+        let gameIDs = [];
+
+        Object.values(ids).forEach((item) => {
+
+            gameIDs = [...gameIDs, item.game_id];
+
+        })
+
+        let genres = "";
+        if (gameIDs.length) {
+            genres = await gameService.getGameGenres(gameIDs);
+        }
+
+        if (genres) {
+            const flatten = array =>
+                array.reduce((results, item) => item.genres ? [...results, ...item.genres.map(genre => ({ name: genre.name }))] : [...results], []);
+
+            const flattened = flatten(genres);
+
+            const mergeAndCount = flattened.reduce((a, c) => {
+                const obj = a.find((obj) => obj.name === c.name);
+                if (!obj) {
+                    a.push({ name: c.name, count: 1 });
+                }
+                else {
+                    obj.count += 1;
+                }
+                return a;
+            }, []);
+
+            const sorted = mergeAndCount.sort((a, b) =>
+                b.count - a.count
+            )
+
+            topGenres = sorted.slice(0, 5);
+        }
+
+        await userService.setTopGenres(email, JSON.stringify(topGenres));
 
         res.status(200).send(true);
 
@@ -82,51 +130,9 @@ const listController = {
     getGameGenres: async (req, res) => {
 
         const email = req.body.email;
-        let result = "";
-        let ids = "";
+        const [result] = await userService.getTopGenres(email);
+        res.status(200).send(result.top_genres);
 
-        if (email) {
-            ids = await listService.getGameIDs(email);
-        }
-
-        let gameIDs = [];
-
-        Object.values(ids).forEach((item) => {
-
-            gameIDs = [...gameIDs, item.game_id];
-
-        })
-
-        let genres = "";
-        if (gameIDs.length) {
-            genres = await gameService.getGameGenres(gameIDs);
-        }
-
-        if (genres) {
-            const flatten = array =>
-                array.reduce((results, item) => item.genres ? [...results, ...item.genres.map(genre => ({ name: genre.name }))] : [...results], []);
-
-            const flattened = flatten(genres);
-
-            const mergeAndCount = flattened.reduce((a, c) => {
-                const obj = a.find((obj) => obj.name === c.name);
-                if (!obj) {
-                    a.push({ name: c.name, count: 1 });
-                }
-                else {
-                    obj.count += 1;
-                }
-                return a;
-            }, []);
-
-            const sorted = mergeAndCount.sort((a, b) =>
-                b.count - a.count
-            )
-
-            result = sorted.slice(0, 5);
-        }
-
-        res.status(200).send(result);
     },
     getAllUserLists: async (req, res) => {
 

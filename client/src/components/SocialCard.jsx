@@ -9,7 +9,11 @@ const SocialCard = (props) => {
 
                 <div className="flex h-full w-full justify-between p-2">
                     <div>
-                        {(props.social.profile_picture && <img className="object-fill h-full w-20 rounded-lg group-hover:opacity-75" src={`/profile_pictures/${props.social.profile_picture}.png`} alt="profile_picture" draggable="false" />)}
+                        {(props.social.profile_picture && <img className="object-fill h-full w-20 rounded-lg group-hover:opacity-75" src={props.img} alt="profile_picture" draggable="false" onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = '/profile_pictures/default.png';
+                        }} />
+                        )}
                     </div>
                     <div className='w-full text-slate-200 py-2 px-3'>
                         {props.social.username}

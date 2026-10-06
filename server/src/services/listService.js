@@ -48,7 +48,7 @@ const listService = {
     getGameScore: async (id) => {
         const data = await db.query(`SELECT ROUND(AVG(score), 2) AS avg_score FROM lists WHERE game_id = $1`, [id]);
         return data.rows;
-    },
+    }
 
 }
 

@@ -8,6 +8,7 @@ import Header from "./pages/layouts/Header.jsx"
 import Sidebar from "./pages/layouts/Sidebar.jsx"
 import Home from "./pages/Home.jsx"
 import User from './pages/User.jsx'
+import Users from './pages/Users.jsx'
 import Settings from './pages/Settings.jsx'
 import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
@@ -68,12 +69,23 @@ const App = () => {
       });
   }
 
+  const searchWithoutOffset = (() => {
+    const params = new URLSearchParams(location.search);
+    params.delete('offset');
+    return params.toString();
+  })();
+
+  // 2. Combine path + non-offset filters into a single key
+  const filterRouteKey = `${location.pathname}?${searchWithoutOffset}`;
+
   useEffect(() => {
-
+    // Only runs when path OR actual filters change (ignores offset updates!)
     window.scrollTo(0, 0);
-    authenticateUser();
+  }, [filterRouteKey]);
 
-  }, [location]);
+  useEffect(() => {
+    authenticateUser();
+  }, []);
 
   return (
     <>
@@ -92,14 +104,12 @@ const App = () => {
             <Routes>
               <Route path='/' element={<Home />} />
 
-              <Route path='/user/:username' element={<User />} />
               <Route path='/settings' element={<Settings />} />
 
-              <Route path='/games' element={<Games key="games" type='GAMES' />} />
-              <Route path='/games/hyped' element={<Games key="hyped" type='HYPED' />} />
-              <Route path='/games/new' element={<Games key="new" type='NEW' />} />
-              <Route path='/games/upcoming' element={<Games key="upcoming" type='UPCOMING' />} />
-              <Route path='/games/best' element={<Games key="best" type='BEST' />} />
+              <Route path='/users' element={<Users />} />
+              <Route path='/user/:username' element={<User />} />
+
+              <Route path='/games' element={<Games />} />
               <Route path='/game/:slug' element={<Game />} />
 
               <Route path='/events' element={<Events />} />

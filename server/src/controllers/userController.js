@@ -1,7 +1,15 @@
 import userService from "../services/userService.js";
+import followService from "../services/followService.js";
 import argon2 from 'argon2';
 import passport from "passport"
 import mailer from "../config/nodemailer.js";
+import { z } from "zod";
+
+const searchInputSchema = z
+    .string()
+    .trim()
+    .transform((val) => val.replace(/\s+/g, " "))
+    .pipe(z.string().min(1).max(50));
 
 const userController = {
     login:
@@ -13,8 +21,9 @@ const userController = {
     loginSuccess: async (req, res) => {
 
         if (req.isAuthenticated()) {
-            res.status(200).send(req.user.username);
+            return res.status(200).send(req.user.username);
         }
+        return res.status(200);
 
     },
     loginFailure: async (req, res) => {
@@ -25,9 +34,9 @@ const userController = {
     authUser: async (req, res) => {
 
         if (req.isAuthenticated()) {
-            res.status(200).send({ id: req.user.id, username: req.user.username, email: req.user.email, profile_picture: req.user.profile_picture });
+            return res.status(200).json({ id: req.user.id, username: req.user.username, email: req.user.email, profile_picture: req.user.profile_picture });
         }
-
+        return res.status(200);
     },
     googleAuth:
         passport.authenticate('google', {
@@ -165,6 +174,62 @@ const userController = {
         }
 
         res.status(200).send(result);
+
+    },
+    searchUsers: async (req, res) => {
+
+        const validation = searchInputSchema.safeParse(req.body.query);
+        // If client bypassed frontend validation or sent bad types, return 400 Bad Request
+        if (!validation.success) {
+            return res.status(400).json({
+                error: "Invalid request parameters"
+            });
+        }
+
+        // Escape Postgres ILIKE wildcards (% and _)
+        const sanitizedQuery = validation.data.replace(/[%_]/g, "\\$&");
+
+        const users = await userService.searchUsers(sanitizedQuery);
+        res.status(200).send(users);
+
+    },
+    searchAllUsers: async (req, res) => {
+
+        const offset = req.body.offset
+        const currentUserID = req.body.userID
+
+        const validation = searchInputSchema.safeParse(req.body.query);
+        // If client bypassed frontend validation or sent bad types, return 400 Bad Request
+        if (!validation.success) {
+            return res.status(400).json({
+                error: "Invalid request parameters"
+            });
+        }
+
+        // Escape Postgres ILIKE wildcards (% and _)
+        const sanitizedQuery = validation.data.replace(/[%_]/g, "\\$&");
+
+        const users = await userService.searchAllUsers(sanitizedQuery, offset);
+
+        let userIDs = "";
+        let followIDs = "";
+        let usersWithFollowIds = users;
+        if (currentUserID) {
+            userIDs = users.map(user => user.id);
+            followIDs = await followService.getAllFollowData(userIDs, currentUserID);
+
+            usersWithFollowIds = users.map(user => {
+                // Find matching follow records for this specific user
+                const [userFollow] = followIDs.filter(follow => follow.following_id === user.id);
+
+                return {
+                    ...user,
+                    followID: userFollow?.id
+                };
+            });
+        }
+
+        res.status(200).send(usersWithFollowIds);
 
     }
 

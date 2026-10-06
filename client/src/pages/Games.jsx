@@ -1,131 +1,446 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import Card from '../components/Card';
 import axios from 'axios'
+import { useSearchParams } from "react-router-dom";
+import { GAME_MODES, SORT_OPTIONS } from "../constants/igdbFilters.js"
+import { useGameFilters } from '../hooks/useGameFilters.js';
+import { ComboboxFilter } from '../components/ComboboxFilter.jsx';
+import SearchFilter from '../components/SearchFilter.jsx';
+import { DropdownFilter } from '../components/DropdownFilter.jsx';
+import MoreFilter from '../components/MoreFilter.jsx';
+import { ActiveFilterBadges } from '../components/ActiveFilterBadges.jsx';
+import { createFilterSchema } from '../schemas/filterSchema.js';
+
+const serverURL = import.meta.env.VITE_REACT_APP_SERVER_BASEURL;
 
 const Games = (props) => {
 
-    const [games, setGames] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [offset, setOffset] = useState(0);
-    const [hasNext, setHasNext] = useState(true);
+  const [games, setGames] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasNext, setHasNext] = useState(true);
+  const [hasResults, setHasResults] = useState(true);
 
-    const controllerRef = useRef();
+  const controllerRef = useRef();
 
-    var type = props.type;
+  const [filterParams, setFilterParams] = useSearchParams();
 
-    const getGames = async (signal) => {
+  const { igdbFilters } = useGameFilters();
 
-        if (hasNext) {
+  const validatedFilterParams = useMemo(() => {
+    // 1. Parse URL params with Zod
+    const rawParams = Object.fromEntries(filterParams.entries());
+    const schema = createFilterSchema(igdbFilters);
+    const validated = schema.parse(rawParams);
 
-            setIsLoading(true);
+    // 2. Rebuild clean URLSearchParams from validated data
+    const cleanParams = new URLSearchParams();
 
-            await axios.post('http://localhost:3000/games/getAllGames', { offset, type }, { signal })
-                .then((response) => {
+    Object.entries(validated).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        if (value.length > 0) cleanParams.set(key, value.join(','));
+      } else if (value !== undefined && value !== null && value !== '') {
+        cleanParams.set(key, String(value));
+      }
+    });
 
-                    const nextOffset = response.data.length - 24;
-                    const result = response.data.slice(0, 24);
+    return cleanParams;
+  }, [filterParams, igdbFilters]);
 
-                    setGames((prevGames) => [...prevGames, ...result]);
-                    setOffset(prevOffset => prevOffset + 24);
-                    setIsLoading(false);
+  const query = validatedFilterParams.get('search') || "";
 
-                    if (nextOffset <= 0) { setHasNext(false) }
+  const isSearching = useMemo(() => {
+    const query = validatedFilterParams.get('search');
+    return query ? true : false;
+  }, [validatedFilterParams]);
 
-                })
-                .catch((error) => {
-                    if (error.code != "ERR_CANCELED") {
-                        console.log(error);
-                    }
 
-                });
+  const getGames = async (signal) => {
+    if (!hasNext) return;
 
-        }
+    setIsLoading(true);
+  
+    const filters = Object.fromEntries(validatedFilterParams.entries());
 
+    const currentOffset = filters.offset || 0;
+
+    if (currentOffset >= 5000) {
+      setHasNext(false);
+      return;
     }
 
-    const loadingCard = (count) => {
+    try {
+      const response = await axios.post(serverURL + "games/getGames", filters, { signal } );
 
-        let cards = []
+      const result = response.data.slice(0, 24);
 
-        for (let i = 0; i < count; i++) {
-            cards.push(<Card key={i} isLoading={true} />)
-        }
+      if (currentOffset == 0 && response.data.length === 0) {
+        setHasResults(false);
+        setGames([]);
+      } else if (response.data.length && currentOffset == 0) {
+        setGames(result);
+        setHasResults(true);
+      } else {
+        setGames((prevGames) => [...prevGames, ...result]);
+      }
 
-        return cards;
+      if (response.data.length < 24) {
+        setHasNext(false);
+      }
+    } catch (error) {
+      if (error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
+        console.error(error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const loadingCard = (count) => {
+
+    let cards = []
+
+    for (let i = 0; i < count; i++) {
+      cards.push(<Card key={i} isLoading={true} />)
     }
 
+    return cards;
 
-    useEffect(() => {
+  }
 
-        if (controllerRef.current) {
-            controllerRef.current.abort();
+  useEffect(() => {
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+
+    controllerRef.current = new AbortController();
+    const signal = controllerRef.current.signal;
+
+    setHasNext(true);
+
+    getGames(signal);
+
+    return () => controllerRef.current?.abort();
+  }, [validatedFilterParams]); // Runs whenever the search query changes
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+  
+      if (scrollTop + clientHeight >= scrollHeight - 20) {
+        if (isLoading || !hasNext) return; // Guard against duplicate triggers
+  
+        // 1. Get current offset from URL
+        const currentOffset = Number(filterParams.get('offset')) || 0;
+        const nextOffset = currentOffset + 24; // Your limit / page size
+  
+        // 2. Simply update the URL — the main useEffect will catch this!
+        const nextParams = new URLSearchParams(window.location.search);
+        nextParams.set('offset', String(nextOffset));
+        setFilterParams(nextParams, { replace: true });
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoading, hasNext, filterParams, setFilterParams]);
+
+  const filterCount = useMemo(() => {
+    let count = 0;
+
+    for(const [key, value] of validatedFilterParams.entries()) {
+      if(key == "sort" || key == "search" || key == "offset" || !value) continue;
+
+      if(value.includes(',')) {
+        count += value.split(',').filter(Boolean).length;
+      } else {
+        count += 1;
+      }
+    }
+
+    return count;
+  })
+  
+
+  const updateSearchParam = (val, paramKey) => {
+    setFilterParams(
+      (prevParams) => {
+        const newParams = new URLSearchParams(window.location.search);
+
+        if (val?.length >= 1) {
+          newParams.set(paramKey, val);
+          newParams.set('sort', 'relevance');
+        } else {
+          newParams.delete(paramKey);
         }
+        newParams.delete('offset');
+        return newParams;
+      },
+      { replace: true }
+    );
+  }
 
-        controllerRef.current = new AbortController();
-        const signal = controllerRef.current.signal;
+  const handleComboBoxToggle = (id, paramKey) => {
+    setFilterParams(
+      (prevParams) => {
+        const newParams = new URLSearchParams(window.location.search);
 
+        // Parse current IDs directly from the latest URL parameter state
+        const currentParam = newParams.get(paramKey);
+        const currentIds = currentParam ? currentParam.split(',') : [];
 
-        getGames(signal);
+        // Normalize IDs to strings for strict equality checks
+        const targetId = String(id);
+        const isSelected = currentIds.some((item) => String(item) === targetId);
 
+        const updated = isSelected
+          ? currentIds.filter((item) => String(item) !== targetId)
+          : [...currentIds, targetId];
 
-        return () => controllerRef.current.abort();
-
-    }, []);
-
-
-    useEffect(() => {
-
-        const handleScroll = () => {
-            const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-
-            if (scrollTop + clientHeight >= scrollHeight - 20) {
-
-                if (controllerRef.current) {
-                    controllerRef.current.abort();
-                }
-
-                controllerRef.current = new AbortController();
-                const signal = controllerRef.current.signal;
-
-                getGames(signal);
-            }
-        };
-
-        if (!isLoading) {
-            window.addEventListener("scroll", handleScroll);
+        if (updated.length > 0) {
+          newParams.set(paramKey, updated.join(','));
+        } else {
+          newParams.delete(paramKey);
         }
+        newParams.delete('offset');
+        return newParams;
+      },
+      { replace: true }
+    );
+  };
 
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
+  const handleDropdownToggle = (id, paramKey) => {
+    setFilterParams((prevParams) => {
+      const paramsCopy = new URLSearchParams(window.location.search);
+      paramsCopy.set(paramKey, id);
+      paramsCopy.delete('offset');
+      return paramsCopy;
+    },
+      { replace: true })
+  };
 
-        };
-    }, [isLoading]);
+  const handlePillToggle = (item, paramKey, multiSelect, selectedItem) => {
+    setFilterParams(
+      (prevParams) => {
+        const newParams = new URLSearchParams(window.location.search);
+
+        if (multiSelect) {
+          // Safe array fallback prevents runtime TypeError if state is empty/null
+          const currentItems = Array.isArray(selectedItem) ? selectedItem : [];
+          const isSelected = currentItems.includes(item);
+
+          const updated = isSelected
+            ? currentItems.filter((id) => id !== item)
+            : [...currentItems, item];
+
+          if (updated.length > 0) {
+            newParams.set(paramKey, updated.join(','));
+          } else {
+            newParams.delete(paramKey);
+          }
+        } else {
+          // Single-select toggle: clear parameter if tapped again
+          if (selectedItem !== item) {
+            newParams.set(paramKey, String(item));
+          } else {
+            newParams.delete(paramKey);
+          }
+        }
+        newParams.delete('offset');
+        return newParams;
+      },
+      { replace: true }
+    );
+  };
+
+  const handleYearToggle = (value, type, paramStart, paramEnd) => {
+    let paramKey = "";
+    if (type == "from") {
+      paramKey = paramStart;
+    } else {
+      paramKey = paramEnd;
+    }
+
+    const newParams = new URLSearchParams(window.location.search);
+    if (value) {
+      newParams.set(paramKey, value);
+    } else {
+      newParams.delete(paramKey);
+    }
+    newParams.delete('offset');
+    setFilterParams(newParams, { replace: true });
+  };
+
+  // 2. Remove an individual filter badge
+  const removeBadge = (paramKey, itemValue) => {
+    setFilterParams(
+      (prev) => {
+
+        const next = new URLSearchParams(window.location.search);
+        const currentValue = next.get(paramKey);
+
+        if (!currentValue) return next;
+
+        if (currentValue.includes(',')) {
+          // Filter out the removed item from comma-separated list
+          const updated = currentValue
+            .split(',')
+            .filter((v) => v != itemValue)
+            .join(',');
+
+          if (updated) {
+            next.set(paramKey, updated);
+          } else {
+            next.delete(paramKey);
+          }
+        } else {
+          // Single-select parameter deletion
+          next.delete(paramKey);
+        }
+        next.delete('offset');
+        return next;
+      },
+      { replace: true }
+    );
+  };
+
+  const resetAll = () => {
+    setFilterParams({ sort: "popularity_desc" }, { replace: true });
+  };
 
 
-    return (
-        <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
-            <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
+  return (
+    <div className='flex justify-center h-full w-full pt-20 pb-20 xl:ps-[18rem] overflow-x-hidden'>
+      <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
-                <div>
-                    <h1 className='text-white text-xl font-medium'>{type}</h1>
+        <div>
 
-                    <div className="flex w-full h-10 bg-gray-800 my-3"></div>
+          <div className='space-y-1 md:flex'>
 
-                    <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
-                        {games.length ? games.map((item, i) => {
-                            return (
-                                <Card key={item.id} id={item.id} name={item.name} title={type} slug={item.slug} rank={i + 1} img={item.cover ? item.cover.urlBig : null} isLoading={false} />
-                            )
-                        }) : loadingCard(24)}
-                        {isLoading && loadingCard(6)}
-                    </div>
-                </div>
+            <div className='flex-col space-y-1 w-full md:w-64 me-2 content-end'>
+              <SearchFilter
+                paramKey="search"
+                filterParams={validatedFilterParams}
+                updateSearchParam={updateSearchParam}
+              />
+            </div>
+
+            <div className="flex md:space-x-2 mb-8 rounded-lg h-auto w-full">
+
+              <div className='space-y-1 w-full hidden md:flex md:flex-col'>
+                <h1 className='text-white p-1'>Platforms</h1>
+                <ComboboxFilter
+                  label="Platforms"
+                  paramKey="platforms"
+                  options={igdbFilters?.platforms}
+                  hasSearch={true}
+                  filterParams={validatedFilterParams}
+                  handleComboBoxToggle={handleComboBoxToggle}
+                />
+              </div>
+
+              <div className='flex-col space-y-1 w-full hidden md:flex md:flex-col'>
+                <h1 className='text-white p-1'>Genres</h1>
+                <ComboboxFilter
+                  label="Genres"
+                  paramKey="genres"
+                  options={igdbFilters?.genres}
+                  hasSearch={false}
+                  filterParams={validatedFilterParams}
+                  handleComboBoxToggle={handleComboBoxToggle}
+                />
+              </div>
+
+              <div className='flex-col space-y-1 w-full hidden md:flex md:flex-col'>
+                <h1 className='text-white p-1'>Game Modes</h1>
+                <ComboboxFilter
+                  label="Game Modes"
+                  paramKey="gameModes"
+                  options={GAME_MODES}
+                  hasSearch={false}
+                  filterParams={validatedFilterParams}
+                  handleComboBoxToggle={handleComboBoxToggle}
+                />
+              </div>
+
+              <div className='flex-col space-y-1 w-full pe-2 md:pe-0'>
+                <h1 className='text-white p-1 hidden md:flex'>Sort</h1>
+                <DropdownFilter
+                  label="Sort"
+                  paramKey="sort"
+                  options={SORT_OPTIONS}
+                  hasSearch={false}
+                  isSearching={isSearching}
+                  filterParams={validatedFilterParams}
+                  handleDropdownToggle={handleDropdownToggle}
+                />
+              </div>
+
+              <MoreFilter
+                filterParams={validatedFilterParams}
+                filterCount={filterCount}
+                handleComboBoxToggle={handleComboBoxToggle}
+                handlePillToggle={handlePillToggle}
+                handleYearToggle={handleYearToggle}
+                resetAll={resetAll}
+              />
 
             </div>
+
+          </div>
+
+          <ActiveFilterBadges
+            filterParams={validatedFilterParams}
+            removeBadge={removeBadge}
+            resetAll={resetAll}
+          />
+
+          <div className='grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-6 xl:gap-4 mt-6'>
+
+            {games?.map((item, i) => (
+              <Card
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                slug={item.slug}
+                img={item.cover?.urlBig}
+                isLoading={false}
+              />
+            ))}
+
+            {isLoading && (games.length === 0 ? loadingCard(24) : loadingCard(6))}
+
+
+          </div>
+
+          {!hasResults && !isLoading &&
+            <div className='flex-col w-full text-white text-center mt-40 justify-items-center px-5'>
+              <div className="p-3 mb-3 rounded-full bg-slate-800/60 border border-slate-700/50">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-12 h-12 text-slate-300"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg></div>
+
+              <h3 className="text-2xl font-semibold text-slate-200">No games found {query && <span>for<span className="text-blue-400"> "{query}"</span></span>}</h3>
+              {validatedFilterParams && <p className="mt-1 text-base text-slate-400">Check your spelling, or try searching with different filters.</p>}
+            </div>
+          }
+
         </div>
 
-    )
+      </div>
+    </div >
+
+  )
 }
 
 export default Games
