@@ -91,9 +91,9 @@ const Card = (props) => {
     if (props.isLoading) {
         return (
 
-            <div className='relative bg-gray-800 border-slate-900 shadow-2xl rounded-xl w-full sm:w-60 xl:w-full animate-pulse'>
+            <div className='relative bg-gray-800 rounded-xl shadow-2xl w-full sm:w-60 xl:w-full animate-pulse'>
                 <div className="h-40 sm:h-60"></div>
-                <div className="p-2 min-h-[3.5rem] me-3 space-y-3">
+                <div className="p-2 min-h-[3.5rem] me-3 space-y-3  w-full">
                     <div className='flex space-x-3'>
                         <div className="h-2 bg-slate-700 rounded basis-3/4"></div>
                         <div className="h-2 bg-slate-700 rounded basis-1/4"></div>

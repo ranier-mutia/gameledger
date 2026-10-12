@@ -33,6 +33,7 @@ const Game = () => {
 
     const controllerRef = useRef();
     const menuRef = useRef();
+    const dropdownRef = useRef(null);
 
     const user = useUserContext();
     const showLoginMenu = useContext(LoginContext);
@@ -225,13 +226,20 @@ const Game = () => {
     }, [game])
 
     useEffect(() => {
-
-        document.addEventListener('mousedown', outsideClickHandler);
-        return () => {
-            document.removeEventListener('mousedown', outsideClickHandler);
-
+        const outsideClickHandler = (event) => {
+            // If click is outside the entire dropdown container (button + menu), close it
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsShown(false);
+            }
         };
 
+        if (isShown) {
+            document.addEventListener('mousedown', outsideClickHandler);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', outsideClickHandler);
+        };
     }, [isShown]);
 
     useEffect(() => {
@@ -266,8 +274,15 @@ const Game = () => {
 
     }, [slug]);
 
+    useEffect(() => {
+        if (isListShown) {
+            document.body.style.overflow = 'hidden'
+        }
+        !isListShown ? document.body.style.overflow = 'unset' : null;
+    }, [isListShown]);
+
     if (!isPageLoading) {
-   
+
         return (
 
             <div className='h-full w-full relative'>
@@ -304,6 +319,7 @@ const Game = () => {
                                             <button type='button' className="z-10 w-full h-10 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-800 py-1 px-3 font-medium rounded-s-lg" onClick={onListClickHandler}>
                                                 {user.loggedIn && listData ? "Update List" : "Add to List"}
                                             </button>
+                                            <div ref={dropdownRef} className='z-10'>
                                             {!isShown &&
                                                 <button type='button' className="z-10 w-10 h-10 bg-blue-500 hover:bg-blue-700 focus:outline-none py-1 px-3 font-medium rounded-e-lg text-white justify-items-center" onClick={onDownClickHandler}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
@@ -318,6 +334,7 @@ const Game = () => {
                                                     </svg>
                                                 </button>
                                             }
+                                            </div>
 
                                             <Transition show={isShown}
                                                 enter='transition-all origin-top duration-250 '
@@ -413,10 +430,10 @@ const Game = () => {
         )
     } else {
 
-        return(
+        return (
             <div className='h-full w-full relative'>
-            {/* Background Image */}
-           
+                {/* Background Image */}
+
                 <div className='flex absolute w-full xl:ps-[17rem]'>
                     <div className='flex h-auto max-h-[600px] min-h-80 w-full mx-auto bg-gray-900'>
 
@@ -437,7 +454,7 @@ const Game = () => {
 
                                 <div className='flex flex-col items-center sm:me-5 h-[24rem] sm:h-[20rem]'>
                                     <div className="flex justify-center align-middle h-64 w-60 bg-gray-700 rounded-xl sm:border sm:border-gray-800 shadow-xl -mt-2">
-                                       <div className='content-center text-white h-64 '></div>
+                                        <div className='content-center text-white h-64 '></div>
                                     </div>
 
                                     <div className='w-60 sm:w-full sm:h-full flex justify-center items-center space-x-2 pt-2 sm:pt-0 animate-pulse'>
@@ -482,28 +499,28 @@ const Game = () => {
                                 <div className='flex flex-col w-full sm:justify-between sm:flex-row'>
 
                                     <div className='hidden sm:block'>
-                                        <GameInfo game={game} score={gameScore} isLoading={isPageLoading}/>
+                                        <GameInfo game={game} score={gameScore} isLoading={isPageLoading} />
                                     </div>
 
                                     <div className='w-full'>
 
-                                        {game.videos && <VideoPlaylist videos={game.videos} isLoading={isPageLoading}/>}
+                                        {game.videos && <VideoPlaylist videos={game.videos} isLoading={isPageLoading} />}
 
-                                     <div className='text-slate-400 mb-4 sm:hidden animate-pulse'>
-                                     <div className='flex space-x-3 w-full mt-2'>
-                                            <div className="h-2 bg-slate-600 rounded basis-3/6"></div>
-                                            <div className="h-2 bg-slate-600 rounded basis-1/6"></div>
-                                            <div className="h-2 bg-slate-600 rounded basis-2/6"></div>
+                                        <div className='text-slate-400 mb-4 sm:hidden animate-pulse'>
+                                            <div className='flex space-x-3 w-full mt-2'>
+                                                <div className="h-2 bg-slate-600 rounded basis-3/6"></div>
+                                                <div className="h-2 bg-slate-600 rounded basis-1/6"></div>
+                                                <div className="h-2 bg-slate-600 rounded basis-2/6"></div>
+                                            </div>
+                                            <div className='flex space-x-3 w-96 mt-2'>
+                                                <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
+                                                <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
+                                                <div className="h-2 bg-slate-600 rounded basis-2/4"></div>
+                                            </div>
                                         </div>
-                                        <div className='flex space-x-3 w-96 mt-2'>
-                                            <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
-                                            <div className="h-2 bg-slate-600 rounded basis-1/4"></div>
-                                            <div className="h-2 bg-slate-600 rounded basis-2/4"></div>
-                                        </div>
-                                     </div>
 
                                         <div className='sm:hidden'>
-                                            <GameInfo game={game} isLoading={isPageLoading}/>
+                                            <GameInfo game={game} isLoading={isPageLoading} />
                                         </div>
 
 
@@ -524,10 +541,10 @@ const Game = () => {
 
 
 
-            
+
             </div>
         )
-      
+
     }
 }
 

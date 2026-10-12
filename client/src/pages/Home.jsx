@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import Strip from '../components/Strip'
 import Stack from '../components/Stack'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { GameCarousel } from '../components/GameCarousel'
 
 const Home = () => {
 
@@ -61,8 +62,7 @@ const Home = () => {
             <div className='px-3 w-full sm:w-auto sm:max-w-3xl xl:max-w-none xl:w-full xl:ps-8 xl:px-8 xl:py-2'>
 
                 <div>
-                    
-                    <Stack title="Hyped" path="?sort=anticipated_desc" games={games && games.hyped} isLoading={isLoading} />
+                    <GameCarousel title="Hyped" path="?sort=anticipated_desc" games={games && games.hyped} isLoading={isLoading} />
                     <Stack title="New" path="?sort=release_desc" games={games && games.new} isLoading={isLoading} />
                     <Stack title="Upcoming" path="?sort=upcoming_asc" games={games && games.upcoming} isLoading={isLoading} />
                     <div className='xl:hidden'>
