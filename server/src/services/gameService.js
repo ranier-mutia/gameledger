@@ -28,7 +28,7 @@ const gameService = {
         config.url = baseURL + '/multiquery';
         config.data = `
             query games "Hyped" {
-                fields name, platforms, cover.url, slug, first_release_date, hypes; where first_release_date > ${millis} & game_type = (0, 8, 9, 10, 11); sort hypes desc; limit 6;
+                fields name, summary, platforms.abbreviation, cover.url, screenshots.url, artworks.url, slug, first_release_date, hypes; where first_release_date > ${millis} & game_type = (0, 8, 9, 10, 11); sort hypes desc; limit 6;
             };
 
             query games "New" {

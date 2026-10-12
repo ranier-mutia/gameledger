@@ -86,12 +86,12 @@ const Games = (props) => {
       if (response.data.length < 24) {
         setHasNext(false);
       }
+      setIsLoading(false);
+
     } catch (error) {
       if (error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
         console.error(error);
       }
-    } finally {
-      setIsLoading(false);
     }
   };
 

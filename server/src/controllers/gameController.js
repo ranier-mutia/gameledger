@@ -18,13 +18,21 @@ const gameController = {
         games.new = newG.result;
         games.upcoming = upcoming.result;
         games.best = best.result;
-
+     
         Object.keys(games).forEach((category) => {
 
             Object.values(games[category]).forEach((item) => {
 
                 if (item.cover) {
                     item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+
+                    if(category == "hyped") {
+                        item.bigScreenshot = item.screenshots[0]?.url.replace(/t_thumb/, "t_720p");
+                        item.bigArtwork = item.artworks[0]?.url.replace(/t_thumb/, "t_720p");
+
+                        let date = new Date(item.first_release_date * 1000);
+                        item.release_date = String(date.toLocaleString('default', { month: 'short'})) + " " +  String(date.getFullYear());
+                    }
 
                     if (category == "best") {
                         let date = new Date(item.first_release_date * 1000);
@@ -151,7 +159,7 @@ const gameController = {
         res.status(200).send(games);
     },
     getGames: async (req, res) => {
-       
+
         try {
             const {
                 search,
@@ -165,7 +173,7 @@ const gameController = {
                 sort,
                 offset
             } = req.body;
-            
+
             let sanitizedQuery = "";
             if (search) {
                 const validation = searchInputSchema.safeParse(search);
