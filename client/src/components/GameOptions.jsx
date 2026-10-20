@@ -65,11 +65,22 @@ const GameOptions = (props) => {
     const onStatusSelectHandler = async (e) => {
 
         const id = listData.id ? listData.id : "";
-        console.log({ id: id, gameID: props.id, status: e.target.id });
-        await axios.post('http://localhost:3000/lists/setStatus', { id: id, gameID: props.id, email: user.email, status: e.target.id })
+        const status = e.target.id;
+
+        let route = '';
+        let data = {};
+        if (status == 'plan' && listData.status == 'plan' && !props.isReleased) {
+            route = 'http://localhost:3000/lists/deleteListData';
+            data = { id: id };
+        } else {
+            route = 'http://localhost:3000/lists/setStatus';
+            data = { id: id, gameID: props.id, email: user.email, status: status }
+        }
+
+        await axios.post(route, data)
             .then((response) => {
                 setListData(response.data);
-                setIsShownStatus(false);
+                if (props.isReleased) setIsShownStatus(false);
             })
             .catch((error) => {
                 if (error.code != "ERR_CANCELED") {
@@ -219,7 +230,7 @@ const GameOptions = (props) => {
                     <div className='absolute w-full h-40 sm:h-60 bg-gray-900 rounded-t-xl border-b border-b-gray-700 p-1' ref={menuRef}>
 
                         {!isLoading.list && !isLoading.getFavorite && !isLoading.getReview ?
-                            <div>
+                            <div className='flex flex-col h-full'>
                                 <div className='w-full h-8 flex justify-between'>
                                     <button className={`text-slate-300  rounded-lg px-1 hover:bg-slate-800 ${!isShownStatus && 'collapse'}`} onClick={() => setIsShownStatus(false)}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
@@ -233,9 +244,42 @@ const GameOptions = (props) => {
                                     </button>
                                 </div>
                                 {!isShownStatus ?
-                                    <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none'>
-                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && listData && 'text-blue-400'}`} onClick={onListClickHandler}>{user.loggedIn && listData ? "Update List" : "Add to List"}</li>
-                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && listData.status && 'text-blue-400'}`} onClick={onStatusClickHandler}>{user.loggedIn && listData.status ? "Update Status" : "Set Status"}</li>
+                                    <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none flex flex-col'>
+                                        {/* Case 1: Game is Unreleased */}
+                                        {!props.isReleased && (
+                                            <li
+                                                id="plan"
+                                                onClick={onStatusSelectHandler}
+                                                className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData.status == 'plan' ? 'text-blue-400' : ''
+                                                    }`}
+                                            >
+                                                {user?.loggedIn && listData?.status === 'plan'
+                                                    ? 'Planned to play'
+                                                    : 'Plan to play'}
+                                            </li>
+                                        )}
+
+                                        {/* Case 2: Game is Released */}
+                                        {props.isReleased && (
+                                            <>
+                                                <li
+                                                    onClick={onListClickHandler}
+                                                    className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData ? 'text-blue-400' : ''
+                                                        }`}
+                                                >
+                                                    {user?.loggedIn && listData ? 'Update List' : 'Add to List'}
+                                                </li>
+
+                                                <li
+                                                    onClick={onStatusClickHandler}
+                                                    className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData?.status ? 'text-blue-400' : ''
+                                                        }`}
+                                                >
+                                                    {user?.loggedIn && listData?.status ? 'Update Status' : 'Set Status'}
+                                                </li>
+                                                <li className={`order-last hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
+                                            </>
+                                        )}
                                         {!isLoading.setFavorite ?
                                             <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && favoriteData && 'text-red-300'}`} onClick={onFavoriteClickHandler}>{user.loggedIn && favoriteData ? "Unfavorite" : "Add to Favorites"}</li>
                                             :
@@ -247,13 +291,15 @@ const GameOptions = (props) => {
                                             </div>
                                         }
 
-                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && reviewData && 'text-blue-400'}`} onClick={onReviewClickHandler}>{user.loggedIn && reviewData ? "Edit Review" : "Make a Review"}</li>
+
                                     </ul>
                                     :
-                                    <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none' onClick={onStatusSelectHandler}>
-                                        <li id='plan' className={`hover:bg-gray-800 p-2 sm:p-5 ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
-                                        <li id='playing' className={`hover:bg-gray-800 p-2 sm:p-5 ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
-                                        <li id='played' className={`hover:bg-gray-800 p-2 sm:p-5 ${listData.status == "played" && 'text-blue-400'}`}>Played</li>
+                                    <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none flex flex-col justify-between h-full' onClick={onStatusSelectHandler}>
+                                        <li id='plan' className={`hover:bg-gray-800 h-full content-center ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
+                                        <li id='playing' className={`hover:bg-gray-800 h-full content-center ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
+                                        <li id='hold' className={`hover:bg-gray-800 h-full content-center ${listData.status == "hold" && 'text-blue-400'}`}>On Hold</li>
+                                        <li id='completed' className={`hover:bg-gray-800 h-full content-center ${listData.status == "completed" && 'text-blue-400'}`}>Completed</li>
+                                        <li id='dropped' className={`hover:bg-gray-800 h-full content-center ${listData.status == "dropped" && 'text-blue-400'}`}>Dropped</li>
                                     </ul>
                                 }
 
@@ -296,23 +342,55 @@ const GameOptions = (props) => {
                 }
 
                 <Transition show={isShown}
-                    enter='transition-all origin-right duration-250'
-                    enterFrom='scale-x-0 right-5'
-                    enterTo="scale-x-full right-8"
-                    leave="transition-all origin-right duration-250 "
-                    leaveFrom="scale-x-full right-8"
-                    leaveTo="scale-x-0 right-5"
+                    enter='transition-all origin-[100%_20%] duration-250'
+                    enterFrom='scale-0 right-5'
+                    enterTo="scale-full right-8"
+                    leave="transition-all origin-[100%_20%] duration-250 "
+                    leaveFrom="scale-full right-8"
+                    leaveTo="scale-0 right-5"
                 >
-                    <div className='z-10 h-52 w-60 absolute -top-1/2 bg-gray-900 rounded-lg p-1 border border-gray-700' ref={menuRef}>
+                    <div className='z-10 h-52 w-60 absolute top-0 right-10 bg-gray-900 rounded-lg p-1 border border-gray-700' ref={menuRef}>
 
                         {!isLoading.list && !isLoading.getFavorite && !isLoading.getReview ?
 
-                            <div>
+                            <div className='flex flex-col h-full'>
 
                                 {!isShownStatus ?
                                     <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none'>
-                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && listData && 'text-blue-400'}`} onClick={onListClickHandler}>{user.loggedIn && listData ? "Update List" : "Add to List"}</li>
-                                        <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && listData.status && 'text-blue-400'}`} onClick={onStatusClickHandler}>{user.loggedIn && listData.status ? "Update Status" : "Set Status"}</li>
+                                        {/* Case 1: Game is Unreleased */}
+                                        {!props.isReleased && (
+                                            <li
+                                                id='plan'
+                                                onClick={onStatusSelectHandler}
+                                                className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData.status == 'plan' ? 'text-blue-400' : ''
+                                                    }`}
+                                            >
+                                                {user?.loggedIn && listData?.status === 'plan'
+                                                    ? 'Planned to play'
+                                                    : 'Plan to play'}
+                                            </li>
+                                        )}
+
+                                        {/* Case 2: Game is Released */}
+                                        {props.isReleased && (
+                                            <>
+                                                <li
+                                                    onClick={onListClickHandler}
+                                                    className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData ? 'text-blue-400' : ''
+                                                        }`}
+                                                >
+                                                    {user?.loggedIn && listData ? 'Update List' : 'Add to List'}
+                                                </li>
+
+                                                <li
+                                                    onClick={onStatusClickHandler}
+                                                    className={`hover:bg-gray-800 p-0.5 sm:p-3 cursor-pointer ${user?.loggedIn && listData?.status ? 'text-blue-400' : ''
+                                                        }`}
+                                                >
+                                                    {user?.loggedIn && listData?.status ? 'Update Status' : 'Set Status'}
+                                                </li>
+                                            </>
+                                        )}
                                         {!isLoading.setFavorite ?
                                             <li className={`hover:bg-gray-800 p-0.5 sm:p-3 ${user.loggedIn && favoriteData && 'text-red-300'}`} onClick={onFavoriteClickHandler}>{user.loggedIn && favoriteData ? "Unfavorite" : "Add to Favorites"}</li>
                                             :
@@ -333,10 +411,12 @@ const GameOptions = (props) => {
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                                             </svg>
                                         </button>
-                                        <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none' onClick={onStatusSelectHandler}>
-                                            <li id='plan' className={`hover:bg-gray-800 p-3.5 ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
-                                            <li id='playing' className={`hover:bg-gray-800 p-4 ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
-                                            <li id='played' className={`hover:bg-gray-800 p-4 ${listData.status == "played" && 'text-blue-400'}`}>Played</li>
+                                        <ul className='text-gray-300 text-center divide-y divide-gray-700 select-none flex flex-col h-full' onClick={onStatusSelectHandler}>
+                                            <li id='plan' className={`hover:bg-gray-800 h-full content-center ${listData.status == "plan" && 'text-blue-400'}`}>Plan to play</li>
+                                            <li id='playing' className={`hover:bg-gray-800 h-full content-center ${listData.status == "playing" && 'text-blue-400'}`}>Playing</li>
+                                            <li id='hold' className={`hover:bg-gray-800 h-full content-center ${listData.status == "hold" && 'text-blue-400'}`}>On Hold</li>
+                                            <li id='completed' className={`hover:bg-gray-800 h-full content-center ${listData.status == "completed" && 'text-blue-400'}`}>Completed</li>
+                                            <li id='dropped' className={`hover:bg-gray-800 h-full content-center ${listData.status == "dropped" && 'text-blue-400'}`}>Dropped</li>
                                         </ul>
                                     </div>
                                 }

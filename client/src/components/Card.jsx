@@ -112,7 +112,7 @@ const Card = (props) => {
 
                 <div onMouseEnter={onMouseEnterHandler} onMouseLeave={onMouseLeaveHandler}>
 
-                    <GameOptions isMouseOver={isMouseOver} type="card" slug={props.slug} id={props.id} />
+                    <GameOptions isMouseOver={isMouseOver} type="card" slug={props.slug} id={props.id} isReleased={props.isReleased} />
 
                     <Link to={"/game/" + props.slug}>
                         <div >

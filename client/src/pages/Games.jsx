@@ -404,6 +404,7 @@ const Games = (props) => {
                 name={item.name}
                 slug={item.slug}
                 img={item.cover?.urlBig}
+                isReleased={item.isReleased}
                 isLoading={false}
               />
             ))}

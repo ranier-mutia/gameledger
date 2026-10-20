@@ -12,14 +12,14 @@ const listController = {
         res.status(200).send(listData);
     },
     updateListData: async (req, res) => {
-        const { id, gameID, email, status, score, dateStart, dateEnd } = req.body;
+        const { id, gameID, email, status, score, dateStart, dateEnd, hours, platforms } = req.body;
 
         if (!id) {
-            const [list] = await listService.addListData(gameID, email, status, score, dateStart, dateEnd);
+            const [list] = await listService.addListData(gameID, email, status, score, dateStart, dateEnd, hours, platforms);
             await activityService.addUserActivity(gameID, email, status, list.id);
 
         } else {
-            await listService.updateListData(id, status, score, dateStart, dateEnd);
+            await listService.updateListData(id, status, score, dateStart, dateEnd, hours, platforms);
             const [activity] = await activityService.getUserActivity(id);
 
             if (activity.status != status) {

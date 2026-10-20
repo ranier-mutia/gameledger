@@ -2,15 +2,15 @@ import db from "../config/database.js"
 
 const reviewService = {
     getReviews: async (offset) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email ORDER BY reviews.date_added DESC LIMIT 17 OFFSET ${offset}`);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 17 OFFSET ${offset}`);
         return data.rows;
     },
     getReview: async (id) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.review, reviews.like, reviews.dislike, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.id = $1`, [id]);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.review, reviews.like, reviews.dislike, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.id = $1 AND reviews.is_deleted = false`, [id]);
         return data.rows;
     },
     getReviewData: async (id, email) => {
-        const data = await db.query(`SELECT id, game_id, email FROM reviews WHERE game_id = $1 AND email = $2`, [id, email]);
+        const data = await db.query(`SELECT id, game_id, email FROM reviews WHERE game_id = $1 AND email = $2 AND reviews.is_deleted = false`, [id, email]);
         return data.rows;
     },
     addReview: async (gameID, email, score, summary, review) => {
@@ -22,7 +22,7 @@ const reviewService = {
         return data.rows;
     },
     deleteReview: async (id) => {
-        const data = await db.query(`DELETE FROM reviews WHERE id = $1`, [id]);
+        const data = await db.query(`UPDATE reviews set is_deleted = true WHERE id = $1`, [id]);
         return data.rows;
     },
     addRating: async (id, rating) => {
@@ -38,19 +38,19 @@ const reviewService = {
         return data.rows;
     },
     getGameReviews: async (id) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 ORDER BY reviews.date_added DESC LIMIT 4`, [id]);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 AND reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 4`, [id]);
         return data.rows;
     },
     getAllGameReviews: async (id, offset) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 ORDER BY reviews.date_added DESC LIMIT 25 OFFSET ${offset}`, [id]);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.game_id = $1 AND reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 25 OFFSET ${offset}`, [id]);
         return data.rows;
     },
     getUserReviews: async (email) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 ORDER BY reviews.date_added DESC LIMIT 4`, [email]);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 AND reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 4`, [email]);
         return data.rows;
     },
     getAllUserReviews: async (email, offset) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 ORDER BY reviews.date_added DESC LIMIT 17 OFFSET $2`, [email, offset]);
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.email = $1 AND reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 17 OFFSET $2`, [email, offset]);
         return data.rows;
     }
 

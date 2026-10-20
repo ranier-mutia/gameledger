@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+import { CheckboxDropdown } from './CheckboxDropdown.jsx';
 import { useUserContext } from '../hooks/UserContext.jsx'
 import axios from 'axios';
 
@@ -20,6 +21,7 @@ const ListForm = (props) => {
         register,
         handleSubmit,
         watch,
+        control,
         formState: { errors, isSubmitting }
     } = useForm({
         defaultValues: {
@@ -27,6 +29,8 @@ const ListForm = (props) => {
             score: props.listData.score != null ? props.listData.score : "",
             dateStart: props.listData.start_date != null ? props.listData.start_date : "",
             dateEnd: props.listData.end_date != null ? props.listData.end_date : "",
+            hours: props.listData.hours != null ? Number(props.listData.hours) : "",
+            platforms: props.listData.platforms != null ? props.listData.platforms : ""
         }
     });
 
@@ -89,6 +93,9 @@ const ListForm = (props) => {
 
     }
 
+    const startDate = watch('dateStart');
+    const endDate = watch('dateEnd');
+
     const onSubmit = async (data) => {
 
         const formData = {
@@ -99,6 +106,8 @@ const ListForm = (props) => {
             score: data.score ? data.score : null,
             dateStart: data.dateStart ? data.dateStart : null,
             dateEnd: data.dateEnd ? data.dateEnd : null,
+            hours: data.hours ? data.hours : null,
+            platforms: data.platforms ? data.platforms : null
         }
 
         if (controllerRef.current) {
@@ -126,7 +135,7 @@ const ListForm = (props) => {
     return (
         <form className='w-full h-full' onSubmit={handleSubmit(onSubmit)} noValidate>
 
-            <div className='flex justify-end mx-10 mt-4'>
+            <div className='flex justify-end mx-10 mt-2'>
                 <button type='button' onClick={onHeartClickHandler} disabled={isLoading.setFavorite}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill={favoriteData ? 'currentColor' : 'none'} viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`w-6 h-6 text-red-400 ${isLoading.setFavorite && 'animate-pulse'}`}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
@@ -137,9 +146,9 @@ const ListForm = (props) => {
 
             <div className='grid sm:grid-cols-2 gap-3 mx-10 text-gray-200'>
 
-                <div className='space-y-2'>
-                    <label className='text-slate-300 text-sm'>Status</label>
-                    <select className={`bg-gray-700 w-full ${watch("status") != "" ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-2 border-gray-600 focus:outline-none ${errors.status ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
+                <div className='space-y-1'>
+                    <label className='text-slate-300 text-xs'>Status</label>
+                    <select className={`bg-gray-700 text-xs w-full ${watch("status") != "" ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-1.5 border-gray-600 focus:outline-none ${errors.status ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
                         name="status"
                         id="status"
                         placeholder='Status'
@@ -154,53 +163,128 @@ const ListForm = (props) => {
                         {watch("status") ? '' : <option value="">None</option>}
                         <option value="plan">Plan to play</option>
                         <option value="playing">Playing</option>
-                        <option value="played">Played</option>
+                        <option value="hold">On Hold</option>
+                        <option value="completed">Completed</option>
+                        <option value="dropped">Dropped</option>
                     </select>
                     {errors.status && <span className='text-red-400 text-xs'>{errors.status.message}</span>}
                 </div>
 
-                <div className='space-y-2'>
-                    <label className='text-slate-300 text-sm'>Score</label>
-                    <input className={`bg-gray-700 w-full rounded-md px-3 py-2 border-gray-600 focus:outline-none ${errors.score ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
+                <div className='space-y-1'>
+                    <label className='text-slate-300 text-xs'>Score</label>
+                    <input className={`bg-gray-700 w-full text-xs rounded-md px-3 py-1.5 border-gray-600 focus:outline-none ${errors.score ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
                         type="number"
                         name="score"
                         id="score"
                         placeholder='0-100'
                         {...register("score", {
-                            validate: {
-                                number: v => {
-                                    if (v != "") {
-                                        if (!/^([0-9]|[1-9][0-9]|100)$/.test(v)) {
-                                            return "Score should be a number between 0-100"
-                                        }
-                                    }
-                                }
-                            }
+                            valueAsNumber: true,
+                            min: { value: 0, message: "Score cannot be less than 0" },
+                            max: { value: 100, message: "Score cannot exceed 100" },
+                            validate: (v) =>
+                                !v || Number.isInteger(v) || "Score must be a whole number"
                         })}
                     />
                     {errors.score && <span className='text-red-400 text-xs'>{errors.score.message}</span>}
                 </div>
 
-                <div className='space-y-2'>
-                    <label className='text-slate-300 text-sm'>Date Started</label>
-                    <input className={`bg-gray-700 w-full focus:text-gray-200 ${watch("dateStart") ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-2 border-gray-600 focus:outline-none ${errors.dateStart ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
+                <div className='space-y-1'>
+                    <label className='text-slate-300 text-xs'>Date Started</label>
+                    <input className={`bg-gray-700 w-full text-xs focus:text-gray-200 ${watch("dateStart") ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-1.5 border-gray-600 focus:outline-none ${errors.dateStart ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
                         type="date"
                         name="dateStart"
                         id="dateStart"
-                        {...register("dateStart")}
+                        {...register('dateStart', {
+                            min: {
+                                value: props.releaseDate, // Can't start before release
+                                message: "Start date cannot be before release date"
+                            },
+                            max: {
+                                value: endDate || undefined, // Can't start after end date
+                                message: "Start date cannot be after end date"
+                            }
+                        })}
+                        min={props.releaseDate} // HTML attribute for browser datepicker
+                        max={endDate || undefined} // Prevents picking dates past end date
                     />
                     {errors.dateStart && <span className='text-red-400 text-xs'>{errors.dateStart.message}</span>}
                 </div>
 
-                <div className='space-y-2'>
-                    <label className='text-slate-300 text-sm'>Date Ended</label>
-                    <input className={`bg-gray-700 w-full focus:text-gray-200 ${watch("dateEnd") ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-2 border-gray-600 focus:outline-none ${errors.dateEnd ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
+                <div className='space-y-1'>
+                    <label className='text-slate-300 text-xs'>Date Ended</label>
+                    <input className={`bg-gray-700 w-full text-xs focus:text-gray-200 ${watch("dateEnd") ? 'text-gray-200' : 'text-gray-400'} rounded-md px-3 py-1.5 border-gray-600 focus:outline-none ${errors.dateEnd ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
                         type="date"
                         name="dateEnd"
                         id="dateEnd"
-                        {...register("dateEnd")}
+                        {...register('dateEnd', {
+                            min: {
+                                value: startDate || props.releaseDate, // Can't end before start or release
+                                message: "End date cannot be before start date"
+                            }
+                        })}
+                        min={startDate || props.releaseDate} // HTML attribute for browser datepicker
                     />
                     {errors.dateEnd && <span className='text-red-400 text-xs'>{errors.dateEnd.message}</span>}
+                </div>
+
+                <div className='space-y-1'>
+                    <label className='text-slate-300 text-xs'>Hours Played</label>
+                    <input className={`bg-gray-700 w-full text-xs rounded-md px-3 py-1.5 border-gray-600 focus:outline-none ${errors.hours ? 'ring-1 focus:ring-red-600 ring-red-400' : 'focus:ring-blue-500 hover:ring-blue-400 hover:outline-none hover:ring-1 focus:ring-1'}`}
+                        type="number"
+                        name="hours"
+                        id="hours"
+                        placeholder='e.g. 45'
+                        {...register("hours", {
+                            valueAsNumber: true,
+                            min: {
+                                value: 0,
+                                message: "Hours played cannot be negative"
+                            },
+                            max: {
+                                value: 9999,
+                                message: "Hours played exceeds maximum limit (9,999)"
+                            },
+                            validate: {
+                                validNumber: (v) => {
+                                    // 1. Allow empty / undefined / null values (Optional field)
+                                    if (v === "" || v === undefined || isNaN(v)) {
+                                        return true;
+                                    }
+
+                                    // 2. Ensure it's a valid positive number up to 2 decimal places (e.g., 12, 12.5, 12.25)
+                                    const isValid = /^\d+(\.\d{1,2})?$/.test(String(v));
+
+                                    // 3. Return true on success, or the error message string on failure
+                                    return isValid || "Please enter a valid number of hours (e.g. 12 or 12.5)";
+                                }
+                            }
+                        })}
+                    />
+                    {errors.hours && <span className='text-red-400 text-xs'>{errors.hours.message}</span>}
+                </div>
+
+                <div className='space-y-1'>
+                <label className='text-slate-300 text-xs'>Platforms</label>
+                    <Controller
+                        name="platforms"
+                        control={control}
+                        render={({ field }) => (
+                            <CheckboxDropdown
+                                label="Platforms"
+                                options={props.platforms}
+                                selectedIds={field.value}
+                                onChange={field.onChange}
+                                error={errors.platforms}
+                            />
+                        )}
+                    />
+
+                    {/* Display validation error message if validation fails */}
+                    {errors.platforms && (
+                        <p className="text-xs text-red-400">
+                            {errors.platforms.message}
+                        </p>
+                    )}
                 </div>
             </div>
 

@@ -90,7 +90,7 @@ const Strip = (props) => {
 
                 </Link>
 
-                <GameOptions isMouseOver={isMouseOver} slug={props.slug} id={props.id} type="strip" />
+                <GameOptions isMouseOver={isMouseOver} slug={props.slug} id={props.id} isReleased={props.isReleased} type="strip" />
 
             </div>
 

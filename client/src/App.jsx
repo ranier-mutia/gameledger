@@ -12,8 +12,6 @@ import Users from './pages/Users.jsx'
 import Settings from './pages/Settings.jsx'
 import Games from './pages/Games.jsx'
 import Game from './pages/Game.jsx'
-import Events from './pages/Events.jsx'
-import Event from './pages/Event.jsx'
 import Reviews from './pages/Reviews.jsx'
 import GameReviews from './pages/GameReviews.jsx'
 import Review from './pages/Review.jsx'
@@ -111,9 +109,6 @@ const App = () => {
 
               <Route path='/games' element={<Games />} />
               <Route path='/game/:slug' element={<Game />} />
-
-              <Route path='/events' element={<Events />} />
-              <Route path='/event/:slug' element={<Event />} />
 
               <Route path='/reviews' element={<Reviews />} />
               <Route path='/reviews/:slug' element={<GameReviews />} />

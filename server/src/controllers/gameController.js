@@ -18,28 +18,31 @@ const gameController = {
         games.new = newG.result;
         games.upcoming = upcoming.result;
         games.best = best.result;
-     
+
+        const currentDate = Date.now().toString().slice(0, 10);
+
         Object.keys(games).forEach((category) => {
 
             Object.values(games[category]).forEach((item) => {
 
-                if (item.cover) {
+                let date = new Date(item.first_release_date * 1000);
+                item.isReleased = item.first_release_date <= currentDate;
+                
+                if (item.cover){
                     item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
+                }
+              
+                if (category == "hyped") {
+                    item.bigScreenshot = item.screenshots[0]?.url.replace(/t_thumb/, "t_720p");
+                    item.bigArtwork = item.artworks[0]?.url.replace(/t_thumb/, "t_720p");
 
-                    if(category == "hyped") {
-                        item.bigScreenshot = item.screenshots[0]?.url.replace(/t_thumb/, "t_720p");
-                        item.bigArtwork = item.artworks[0]?.url.replace(/t_thumb/, "t_720p");
 
-                        let date = new Date(item.first_release_date * 1000);
-                        item.release_date = String(date.toLocaleString('default', { month: 'short'})) + " " +  String(date.getFullYear());
-                    }
+                    item.release_date = String(date.toLocaleString('default', { month: 'short' })) + " " + String(date.getFullYear());
+                }
 
-                    if (category == "best") {
-                        let date = new Date(item.first_release_date * 1000);
-                        item.release_date = date.getFullYear();
-
-                        item.score = Math.round(item.rating);
-                    }
+                if (category == "best") {
+                    item.release_date = date.getFullYear();
+                    item.score = Math.round(item.rating);
                 }
 
             })
@@ -78,10 +81,15 @@ const gameController = {
         const slug = req.body.slug;
 
         const [game] = await gameService.game(slug) ?? [];
-
+ 
         if (game) {
+
+            const currentDate = Date.now().toString().slice(0, 10);
+            game.isReleased = game.first_release_date <= currentDate;
+
             if (game.first_release_date) {
                 game.release_date = new Date(game.first_release_date * 1000).toLocaleDateString();
+                game.releaseDate = new Date(game.first_release_date * 1000).toISOString().split('T')[0];
             }
 
             if (game.cover) {
@@ -118,7 +126,11 @@ const gameController = {
 
         const games = await gameService.getSimilarGames(ids);
 
+        const currentDate = Date.now().toString().slice(0, 10);
+
         Object.values(games).forEach((item) => {
+
+            item.isReleased = item.first_release_date <= currentDate;
 
             if (item.cover) {
                 item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
@@ -200,7 +212,11 @@ const gameController = {
                 offset
             });
 
+            const currentDate = Date.now().toString().slice(0, 10);
+
             Object.values(result).forEach((item) => {
+                
+                item.isReleased = item.first_release_date <= currentDate;
                 if (item.cover) {
                     item.cover.urlBig = item.cover.url.replace(/t_thumb/, "t_cover_big");
                 }

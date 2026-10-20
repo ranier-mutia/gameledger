@@ -17,7 +17,8 @@ export function GameCarousel(props) {
   const [listMenuData, setListMenuData] = useState({
     slug: "",
     list: "",
-    fave: ""
+    fave: "",
+    review: ""
   });
   const [triggerAction, setTriggerAction] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState(null);
@@ -26,11 +27,12 @@ export function GameCarousel(props) {
   const user = useUserContext();
   const showLoginMenu = useContext(LoginContext);
 
-  const showListMenu = (slugData, listData, favoriteData) => {
+  const showListMenu = (slugData, listData, favoriteData, reviewData) => {
     setListMenuData({
       slug: slugData,
       list: listData,
-      fave: favoriteData
+      fave: favoriteData,
+      review: reviewData
     })
 
     setIsListShown(true);
@@ -79,7 +81,7 @@ export function GameCarousel(props) {
               prevEl: '.custom-prev',
               nextEl: '.custom-next'
             }}
-            autoplay={{ delay: 600000, pauseOnMouseEnter: true, disableOnInteraction: false }}
+            autoplay={{ delay: 6000, pauseOnMouseEnter: true, disableOnInteraction: false }}
             loop={true}
             className='rounded-2xl'
           >
@@ -133,7 +135,7 @@ export function GameCarousel(props) {
                         />
                       </div>
 
-                      <Link to={"/game/" + item.slug} className='text-slate-300 text-xs md:text-sm font-medium text-nowrap flex flex-nowrap space-x-1 bg-black rounded-lg py-1 px-3 h-7 md:h-8 items-center justify-center'>
+                      <Link to={"/game/" + item.slug} className='text-slate-300 text-xs md:text-sm font-medium text-nowrap flex flex-nowrap space-x-1 bg-black hover:bg-gray-900 rounded-lg py-1 px-3 h-7 md:h-8 items-center justify-center'>
                         <span>View Details</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

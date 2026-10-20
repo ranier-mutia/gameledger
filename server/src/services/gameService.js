@@ -19,12 +19,12 @@ let config = {
     data: ''
 };
 
-let millis = Date.now().toString().slice(0, 10);
+
 
 
 const gameService = {
     homeAllGames: async () => {
-
+        let millis = Date.now().toString().slice(0, 10);
         config.url = baseURL + '/multiquery';
         config.data = `
             query games "Hyped" {
@@ -230,6 +230,8 @@ const gameService = {
             const [field, direction] = validSort.split('_'); // e.g., ['rating', 'asc']
             const order = direction === 'asc' ? 'asc' : 'desc';
 
+            let millis = Date.now().toString().slice(0, 10);
+
             switch (field) {
                 case 'release': // Handles 'release_asc' or 'release_desc'
                     addWhere('first_release_date != null');
@@ -269,7 +271,7 @@ const gameService = {
 
         config.url = baseURL + '/games';
         config.data =
-            `fields name, slug, cover.url;
+            `fields name, slug, cover.url, first_release_date;
             where ${whereClauses.join(' & ')};
             ${sortDirective}
             limit 25;
