@@ -1,8 +1,8 @@
 import db from "../config/database.js"
 
 const reviewService = {
-    getReviews: async (offset) => {
-        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT 17 OFFSET ${offset}`);
+    getReviews: async (offset, limit) => {
+        const data = await db.query(`SELECT reviews.id, reviews.game_id, reviews.email, reviews.score, reviews.summary, reviews.like, reviews.date_added, users.username FROM reviews INNER JOIN users ON reviews.email = users.email WHERE reviews.is_deleted = false ORDER BY reviews.date_added DESC LIMIT $1 OFFSET $2`, [limit, offset]);
         return data.rows;
     },
     getReview: async (id) => {

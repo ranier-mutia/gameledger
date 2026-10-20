@@ -36,6 +36,7 @@ const Nav = (props) => {
                     </CustomLink>
                     <li>
                         <ul className=''>
+                            <CustomLink to='/games?sort=popularity_desc' title='Popular' isMain={false}  ></CustomLink>
                             <CustomLink to='/games?sort=anticipated_desc' title='Hyped' isMain={false}  ></CustomLink>
                             <CustomLink to='/games?sort=release_desc' title='New' isMain={false}  ></CustomLink>
                             <CustomLink to='/games?sort=upcoming_asc' title='Upcoming' isMain={false}  ></CustomLink>

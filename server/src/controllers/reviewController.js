@@ -5,7 +5,7 @@ import preferenceService from "../services/preferenceService.js";
 const reviewController = {
     getReviews: async (req, res) => {
 
-        var reviews = await reviewService.getReviews(req.body.offset);
+        var reviews = await reviewService.getReviews(req.body.offset, req.body.limit);
 
         let gameIDs = [];
 

@@ -10,12 +10,13 @@ const searchInputSchema = z
 const gameController = {
     getHomeAllGames: async (req, res) => {
 
-        const [hyped, newG, upcoming, best] = await gameService.homeAllGames();
+        const [hyped, newG, popular, upcoming, best] = await gameService.homeAllGames();
 
         let games = {};
 
         games.hyped = hyped.result;
         games.new = newG.result;
+        games.popular = popular.result;
         games.upcoming = upcoming.result;
         games.best = best.result;
 

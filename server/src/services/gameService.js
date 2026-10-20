@@ -35,6 +35,10 @@ const gameService = {
                 fields name, platforms, cover.url, slug, first_release_date; where first_release_date < ${millis} & game_type = (0, 8, 9, 10, 11); sort first_release_date desc; limit 6;
             };
 
+            query games "Popular" {
+                fields name, platforms, cover.url, slug, first_release_date; where game_type = (0, 8, 9, 10, 11) & rating_count != null; sort rating_count desc; limit 6;
+            };
+
             query games "Upcoming" {
                 fields name, platforms, cover.url, slug, first_release_date; where first_release_date > ${millis} & game_type = (0, 8, 9, 10, 11); sort first_release_date asc; limit 6;
             };
@@ -179,7 +183,7 @@ const gameService = {
             sort = '',
             offset = 0
         } = filters;
-        
+
         const whereClauses = [
             'game_type = (0, 8, 9, 10, 11)', // Exclude non-game releases
         ];
@@ -191,7 +195,7 @@ const gameService = {
         };
 
         const sanitizeIDs = (raw) => raw.split(',').map(Number).filter(Boolean).join(',');
-       
+
         if (platforms) addWhere(`platforms = (${sanitizeIDs(platforms)})`);
         if (genres) addWhere(`genres = (${sanitizeIDs(genres)})`);
         if (gameModes) addWhere(`game_modes = (${sanitizeIDs(gameModes)})`);
@@ -213,19 +217,19 @@ const gameService = {
         }
 
         let sortDirective = '';
-        
+
 
         if (sanitizedQuery) {
             // Search directive overrides manual sorting
-            if(sort === 'relevance'){
+            if (sort === 'relevance') {
                 sortDirective = `search "${sanitizedQuery}";`;
             } else {
                 addWhere(`name ~ *"${sanitizedQuery}"*`);
             }
-            
-        } 
-        
-        if (sort != 'relevance') {       
+
+        }
+
+        if (sort != 'relevance') {
             const validSort = ALLOWED_SORTS.has(sort) ? sort : 'popularity_desc';
             const [field, direction] = validSort.split('_'); // e.g., ['rating', 'asc']
             const order = direction === 'asc' ? 'asc' : 'desc';
@@ -277,7 +281,7 @@ const gameService = {
             limit 25;
             offset ${offset};
         `;
-        
+
         return axios.request(config)
             .then(response => {
                 return response.data;
@@ -299,7 +303,7 @@ const gameService = {
                 END AS priority
                 FROM igdb_platforms
                 ORDER BY priority ASC, name ASC;`),
-            ]);
+        ]);
         return {
             genres: genreResults.rows,
             themes: themeResults.rows,

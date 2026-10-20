@@ -30,7 +30,7 @@ const Reviews = (props) => {
 
             setIsLoading(true);
 
-            await axios.post('http://localhost:3000/reviews/getReviews', { offset }, { signal })
+            await axios.post('http://localhost:3000/reviews/getReviews', { offset, limit: 17 }, { signal })
                 .then((response) => {
 
                     const nextOffset = response.data.length - 16;
